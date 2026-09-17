@@ -1,0 +1,6 @@
+{
+  "name": "مغامرات الحروف والأرقام - أولى ابتدائي",
+  "description": "برنامج تعليمي تفاعلي متكامل للأطفال لسن 6 سنوات مبني على منهج اللغة العربية والحساب للصف الأول الابتدائي بأنشطة ممتعة ونظام مكافآت ونقاط يومي.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

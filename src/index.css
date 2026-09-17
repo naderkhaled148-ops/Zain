@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
+  }
+  
+  h1, h2, h3, .font-heading {
+    font-family: 'Marhey', 'Tajawal', cursive, sans-serif;
+  }
+}
+
+.font-kids {
+  font-family: 'Marhey', cursive, sans-serif;
+}
+
+.font-reading {
+  font-family: 'Tajawal', sans-serif;
+}
+
+/* Kid playful pulse & float */
+@keyframes playful-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-playful {
+  animation: playful-bounce 2s ease-in-out infinite;
+}
+
+/* Custom scrollbar for friendly cards */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #fdf6e2;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb {
+  background: #f59e0b;
+  border-radius: 9999px;
+}
+
