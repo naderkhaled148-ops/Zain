@@ -69,6 +69,12 @@ export default function App() {
     const next = !isSoundOn;
     setIsSoundOn(next);
     sound.setSoundEnabled(next);
+    if (next) {
+      sound.unlockAudio();
+      sound.speakArabic('تَمَّ تَشْغِيلُ الصَّوْت');
+    } else {
+      sound.stopCurrentSpeech();
+    }
   };
 
   const handleLoginSuccess = (user: UserAccount) => {

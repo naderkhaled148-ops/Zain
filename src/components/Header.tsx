@@ -167,6 +167,22 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
+          {/* Quick audio test */}
+          {isSoundOn && (
+            <button
+              type="button"
+              onClick={() => {
+                sound.unlockAudio();
+                sound.speakArabic('أَهْلاً بِكَ! صَوْتُ الْحُرُوفِ وَالْجُمَلِ يَعْمَلُ بِمِثَالِيَّة!');
+              }}
+              className="hidden sm:flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white text-xs px-2.5 py-1.5 rounded-xl font-bold border border-white/30 transition-all cursor-pointer shadow-xs active:scale-95"
+              title="انقر لتجربة نطق الصوت فوراً"
+            >
+              <Volume2 className="w-3.5 h-3.5 text-yellow-300" />
+              <span>تَجْرِبَةُ النُّطْق</span>
+            </button>
+          )}
+
           {/* Sound Toggle */}
           <button
             onClick={() => {
