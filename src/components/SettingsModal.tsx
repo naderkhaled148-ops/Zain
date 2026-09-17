@@ -11,10 +11,14 @@ import {
   RotateCcw,
   Sun,
   Moon,
-  Zap
+  Zap,
+  GraduationCap,
+  ShieldCheck,
+  Award
 } from 'lucide-react';
-import { ThemeId, ButtonStyleVariant, AppTheme } from '../types';
+import { ThemeId, ButtonStyleVariant, AppTheme, DifficultyLevel } from '../types';
 import { APP_THEMES, BUTTON_STYLE_CLASSES } from '../data/themesData';
+import { DIFFICULTY_CONFIGS, getDifficultyConfig } from '../data/difficultyData';
 import { sound } from '../utils/soundEffects';
 
 interface SettingsModalProps {
@@ -22,8 +26,10 @@ interface SettingsModalProps {
   onClose: () => void;
   currentThemeId: ThemeId;
   currentButtonStyle: ButtonStyleVariant;
+  currentDifficulty?: DifficultyLevel;
   onSelectTheme: (themeId: ThemeId) => void;
   onSelectButtonStyle: (style: ButtonStyleVariant) => void;
+  onSelectDifficulty?: (difficulty: DifficultyLevel) => void;
   isSoundOn: boolean;
   onToggleSound: () => void;
 }
@@ -33,8 +39,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose,
   currentThemeId,
   currentButtonStyle,
+  currentDifficulty = 'medium',
   onSelectTheme,
   onSelectButtonStyle,
+  onSelectDifficulty,
   isSoundOn,
   onToggleSound
 }) => {
@@ -42,6 +50,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   const activeTheme = APP_THEMES.find(t => t.id === currentThemeId) || APP_THEMES[0];
   const activeBtnConfig = BUTTON_STYLE_CLASSES[currentButtonStyle];
+  const activeDifficultyConfig = getDifficultyConfig(currentDifficulty);
 
   const handleThemeClick = (theme: AppTheme) => {
     sound.playStar();
@@ -65,6 +74,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       classic: 'أَزْرَارٌ كَلَاسِيكِيَّة'
     };
     sound.speakArabic(`تَمَّ اخْتِيَارُ ${names[variant]}`);
+  };
+
+  const handleDifficultyClick = (level: DifficultyLevel) => {
+    sound.playSuccess();
+    if (onSelectDifficulty) {
+      onSelectDifficulty(level);
+    }
+    const config = DIFFICULTY_CONFIGS[level];
+    sound.speakArabic(config.speechAnnouncement);
   };
 
   return (
@@ -251,7 +269,131 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
         </div>
 
-        {/* SECTION 3: AUDIO & VOICE SETTINGS */}
+        {/* SECTION 3: PARENT DIFFICULTY CONTROLS */}
+        <div className="mb-8 p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-indigo-50/70 via-purple-50/50 to-amber-50/60 border-2 border-indigo-200/80 shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-indigo-100 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+                <GraduationCap className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-black font-kids text-indigo-950 flex items-center gap-2">
+                  <span>تَعْدِيلُ مُسْتَوَى الصُّعُوبَة (لِأَوْلِيَاءِ الْأُمُور)</span>
+                  <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full font-bold">
+                    👨‍👩‍👧‍👦 خَاصٌّ بِالْوَالِدَيْن
+                  </span>
+                </h3>
+                <p className="text-xs text-indigo-900/80">
+                  اختر مستوى الأنشطة المناسب لمهارات طفلك (سهل، متوسط، صعب) لضبط الحساب والحروف والألعاب
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 bg-white px-3 py-1 rounded-full border border-indigo-200 shadow-2xs">
+              <span className="text-xs text-slate-500 font-medium">الْمُسْتَوَى النَّشِط:</span>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${activeDifficultyConfig.activeBadgeClass}`}>
+                {activeDifficultyConfig.icon} {activeDifficultyConfig.labelShort}
+              </span>
+            </div>
+          </div>
+
+          {/* Difficulty Level Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-3">
+            {(Object.keys(DIFFICULTY_CONFIGS) as DifficultyLevel[]).map((levelKey) => {
+              const diff = DIFFICULTY_CONFIGS[levelKey];
+              const isSelected = levelKey === currentDifficulty;
+
+              return (
+                <button
+                  key={levelKey}
+                  type="button"
+                  onClick={() => handleDifficultyClick(levelKey)}
+                  className={`text-right p-3.5 rounded-2xl border-2 transition-all duration-200 cursor-pointer relative flex flex-col justify-between ${
+                    isSelected
+                      ? `bg-white shadow-md scale-[1.02] ring-2 ring-indigo-400/40 ${diff.borderClass}`
+                      : 'bg-white/80 hover:bg-white border-slate-200 hover:border-indigo-200'
+                  }`}
+                >
+                  {/* Top Bar: Icon, Name & Checkmark */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl p-1 rounded-xl bg-slate-50 border border-slate-100 shadow-2xs">
+                          {diff.icon}
+                        </span>
+                        <div>
+                          <div className="font-kids font-bold text-sm text-slate-800">
+                            {diff.label}
+                          </div>
+                          <div className="text-[10px] text-slate-500 font-mono">
+                            {diff.englishLabel}
+                          </div>
+                        </div>
+                      </div>
+
+                      {isSelected && (
+                        <span className="bg-indigo-600 text-white p-1 rounded-full shadow-xs">
+                          <Check className="w-3.5 h-3.5" />
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Age recommendation */}
+                    <div className="mb-2">
+                      <span className="text-[10px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">
+                        👥 الفئة: {diff.ageGroup}
+                      </span>
+                    </div>
+
+                    {/* Summary */}
+                    <p className="text-[11px] text-slate-600 leading-relaxed mb-3">
+                      {diff.summary}
+                    </p>
+
+                    {/* Activity Adaptations Checklist */}
+                    <div className="space-y-1.5 text-[10px] text-slate-700 border-t border-slate-100 pt-2 mb-2">
+                      <div className="flex items-start gap-1">
+                        <span className="text-xs">🔢</span>
+                        <span>{diff.mathDetails}</span>
+                      </div>
+                      <div className="flex items-start gap-1">
+                        <span className="text-xs">📖</span>
+                        <span>{diff.languageDetails}</span>
+                      </div>
+                      <div className="flex items-start gap-1">
+                        <span className="text-xs">🎮</span>
+                        <span>{diff.gamesDetails}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Level status indicator */}
+                  <div className="pt-2 border-t border-slate-100">
+                    <div 
+                      className={`text-center py-1 px-2 rounded-xl text-xs font-bold transition-colors ${
+                        isSelected 
+                          ? diff.activeBadgeClass 
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {isSelected ? '✓ الْمُسْتَوَى الْمُفَعَّلُ حَالِيًّا' : 'انْقُرْ لِلتَّفْعِيل'}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Parental guidance tip */}
+          <div className="flex items-center gap-2 text-xs text-indigo-900 bg-white/70 p-2.5 rounded-xl border border-indigo-100">
+            <span className="text-base">💡</span>
+            <span>
+              <strong>نَصِيحَةٌ لِلْوَالِدَيْن:</strong> يُمْكِنُكُمْ تَغْيِيرُ مُسْتَوَى الصُّعُوبَةِ فِي أَيِّ وَقْتٍ مَعَ تَقَدُّمِ طِفْلِكَ، وَسَتَبْقَى جَمِيعُ النُّجُومِ وَالْأَوْسِمَةِ مَحْفُوظَةً كَمَا هِيَ.
+            </span>
+          </div>
+        </div>
+
+        {/* SECTION 4: AUDIO & VOICE SETTINGS */}
         <div className="mb-6 p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80">
           <h3 className="text-base font-black font-kids text-amber-950 mb-3 flex items-center gap-2">
             <Volume2 className="w-5 h-5 text-amber-700" />

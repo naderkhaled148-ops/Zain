@@ -112,6 +112,8 @@ export interface QuizQuestion {
   emojiHint?: string;
 }
 
+export type DifficultyLevel = 'easy' | 'medium' | 'hard';
+
 export interface UserProgress {
   stars: number;
   coins: number;
@@ -125,6 +127,7 @@ export interface UserProgress {
   selectedCharacterId?: string;
   themeId?: ThemeId;
   buttonStyle?: ButtonStyleVariant;
+  difficultyLevel?: DifficultyLevel;
   gameStats?: {
     readingScore: number;
     writingScore: number;

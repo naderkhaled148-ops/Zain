@@ -1,23 +1,41 @@
 import React, { useState } from 'react';
 import { QUIZ_QUESTIONS } from '../data/curriculumData';
-import { QuizQuestion } from '../types';
+import { QuizQuestion, DifficultyLevel } from '../types';
+import { getDifficultyConfig } from '../data/difficultyData';
 import { sound } from '../utils/soundEffects';
-import { Sparkles, Trophy, CheckCircle2, RotateCcw, Volume2, Award, Heart } from 'lucide-react';
+import { Sparkles, Trophy, CheckCircle2, RotateCcw, Volume2, Award, Heart, HelpCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface QuizModalProps {
   onEarnRewards: (stars: number, coins: number, xp: number) => void;
   onFinishQuiz?: () => void;
+  difficultyLevel?: DifficultyLevel;
+  onOpenSettings?: () => void;
 }
 
-export const QuizModal: React.FC<QuizModalProps> = ({ onEarnRewards }) => {
+export const QuizModal: React.FC<QuizModalProps> = ({ 
+  onEarnRewards,
+  difficultyLevel = 'medium',
+  onOpenSettings 
+}) => {
+  const diffConfig = getDifficultyConfig(difficultyLevel);
+
+  // Filter or prioritize questions based on difficulty
+  const activeQuestions: QuizQuestion[] = React.useMemo(() => {
+    if (difficultyLevel === 'easy') {
+      // Easy: focus on foundational sound, word-match, and basic math with high hints
+      return QUIZ_QUESTIONS.filter(q => q.type === 'sound' || q.type === 'word-match' || q.id === 'q6');
+    }
+    return QUIZ_QUESTIONS;
+  }, [difficultyLevel]);
+
   const [currentIdx, setCurrentIdx] = useState<number>(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState<boolean>(false);
   const [score, setScore] = useState<number>(0);
   const [quizFinished, setQuizFinished] = useState<boolean>(false);
 
-  const question: QuizQuestion = QUIZ_QUESTIONS[currentIdx];
+  const question: QuizQuestion = activeQuestions[currentIdx] || activeQuestions[0];
 
   const handleSelectAnswer = (option: string) => {
     if (isAnswered) return;
@@ -29,9 +47,12 @@ export const QuizModal: React.FC<QuizModalProps> = ({ onEarnRewards }) => {
       setScore(prev => prev + 1);
       sound.playSuccess();
       sound.speakPraise();
-      onEarnRewards(2, 5, 20);
+      const stars = difficultyLevel === 'hard' ? 3 : 2;
+      const coins = difficultyLevel === 'hard' ? 8 : 5;
+      const xp = Math.round(20 * diffConfig.rewardMultiplier);
+      onEarnRewards(stars, coins, xp);
       confetti({
-        particleCount: 30,
+        particleCount: difficultyLevel === 'hard' ? 45 : 30,
         spread: 50,
         origin: { y: 0.6 }
       });
@@ -46,7 +67,7 @@ export const QuizModal: React.FC<QuizModalProps> = ({ onEarnRewards }) => {
     setIsAnswered(false);
     setSelectedAnswer(null);
 
-    if (currentIdx + 1 < QUIZ_QUESTIONS.length) {
+    if (currentIdx + 1 < activeQuestions.length) {
       setCurrentIdx(prev => prev + 1);
     } else {
       // Finished all questions!
@@ -72,7 +93,7 @@ export const QuizModal: React.FC<QuizModalProps> = ({ onEarnRewards }) => {
 
   // Certificate / Results Screen
   if (quizFinished) {
-    const total = QUIZ_QUESTIONS.length;
+    const total = activeQuestions.length;
     const percentage = Math.round((score / total) * 100);
 
     return (
@@ -95,19 +116,19 @@ export const QuizModal: React.FC<QuizModalProps> = ({ onEarnRewards }) => {
         {/* Big Score Box */}
         <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl p-5 my-6 border-2 border-amber-200 flex items-center justify-around">
           <div>
-            <div className="text-3xl font-black font-kids text-amber-600">⭐ {score * 2}</div>
+            <div className="text-3xl font-black font-kids text-amber-600">⭐ {score * (difficultyLevel === 'hard' ? 3 : 2)}</div>
             <div className="text-xs font-bold text-slate-500">نُجُوم مُكْتَسَبَة</div>
           </div>
           <div className="h-10 w-px bg-amber-200" />
           <div>
-            <div className="text-3xl font-black font-kids text-yellow-600">🪙 {score * 5}</div>
+            <div className="text-3xl font-black font-kids text-yellow-600">🪙 {score * (difficultyLevel === 'hard' ? 8 : 5)}</div>
             <div className="text-xs font-bold text-slate-500">عُمْلَات ذَهَبِيَّة</div>
           </div>
         </div>
 
         <button
           onClick={handleRestart}
-          className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 active:scale-95 text-white font-black font-kids text-lg px-8 py-3 rounded-2xl shadow-md inline-flex items-center gap-2 transition-all"
+          className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 active:scale-95 text-white font-black font-kids text-lg px-8 py-3 rounded-2xl shadow-md inline-flex items-center gap-2 transition-all cursor-pointer"
         >
           <RotateCcw className="w-5 h-5" />
           <span>إِعَادَةُ الِاخْتِبَار لِجَمْعِ الْمَزِيد</span>
@@ -132,17 +153,32 @@ export const QuizModal: React.FC<QuizModalProps> = ({ onEarnRewards }) => {
           </p>
         </div>
 
-        {/* Progress & Audio */}
+        {/* Progress & Audio & Difficulty */}
         <div className="flex items-center gap-2">
+          {onOpenSettings && (
+            <button
+              onClick={() => {
+                sound.playPop();
+                onOpenSettings();
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs border transition-all hover:scale-105 cursor-pointer ${diffConfig.borderClass} ${diffConfig.bgClass} ${diffConfig.textClass}`}
+              title="تعديل مستوى الصعوبة في الإعدادات"
+            >
+              <span>{diffConfig.icon}</span>
+              <span>المستوى: {diffConfig.labelShort}</span>
+              <span className="text-[10px] opacity-75 underline mr-1">(تغيير)</span>
+            </button>
+          )}
+
           <button
             onClick={() => sound.speakArabic(question.question)}
-            className="flex items-center gap-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-1.5 rounded-xl font-bold text-xs"
+            className="flex items-center gap-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-1.5 rounded-xl font-bold text-xs cursor-pointer"
           >
             <Volume2 className="w-4 h-4 text-amber-700" />
             <span>اقْرَأْ لِي السُّؤَال</span>
           </button>
           <span className="text-xs font-bold bg-amber-100 text-amber-900 px-3 py-1.5 rounded-full">
-            السُّؤَال {currentIdx + 1} مِنْ {QUIZ_QUESTIONS.length}
+            السُّؤَال {currentIdx + 1} مِنْ {activeQuestions.length}
           </span>
         </div>
       </div>

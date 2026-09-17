@@ -1,20 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MATH_DATA } from '../data/curriculumData';
+import { EASY_MATH_DATA, HARD_MATH_DATA, getDifficultyConfig } from '../data/difficultyData';
+import { DifficultyLevel, MathItem } from '../types';
 import { sound } from '../utils/soundEffects';
-import { Sparkles, CheckCircle2, ArrowLeft, Volume2, HelpCircle } from 'lucide-react';
+import { Sparkles, CheckCircle2, ArrowLeft, Volume2, HelpCircle, Trophy } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface MathZoneProps {
   onEarnRewards: (stars: number, coins: number, xp: number) => void;
+  difficultyLevel?: DifficultyLevel;
+  onOpenSettings?: () => void;
 }
 
-export const MathZone: React.FC<MathZoneProps> = ({ onEarnRewards }) => {
+export const MathZone: React.FC<MathZoneProps> = ({ 
+  onEarnRewards, 
+  difficultyLevel = 'medium',
+  onOpenSettings 
+}) => {
+  const diffConfig = getDifficultyConfig(difficultyLevel);
+
+  // Pick dataset based on difficulty level
+  const activeDataset: MathItem[] = difficultyLevel === 'easy' 
+    ? EASY_MATH_DATA 
+    : difficultyLevel === 'hard' 
+      ? HARD_MATH_DATA 
+      : MATH_DATA;
+
   const [currentIdx, setCurrentIdx] = useState<number>(0);
   const [selectedOption, setSelectedOption] = useState<string | number | null>(null);
   const [isAnswered, setIsAnswered] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
 
-  const currentItem = MATH_DATA[currentIdx];
+  // Reset index if dataset changes
+  useEffect(() => {
+    setCurrentIdx(0);
+    setSelectedOption(null);
+    setIsAnswered(false);
+  }, [difficultyLevel]);
+
+  const currentItem = activeDataset[currentIdx] || activeDataset[0];
 
   const handleSelectOption = (opt: string | number) => {
     if (isAnswered) return;
@@ -27,10 +51,13 @@ export const MathZone: React.FC<MathZoneProps> = ({ onEarnRewards }) => {
     if (correct) {
       sound.playSuccess();
       sound.speakPraise();
-      onEarnRewards(2, 5, 20);
+      const earnedStars = difficultyLevel === 'hard' ? 3 : 2;
+      const earnedCoins = difficultyLevel === 'hard' ? 8 : 5;
+      const earnedXp = Math.round(20 * diffConfig.rewardMultiplier);
+      onEarnRewards(earnedStars, earnedCoins, earnedXp);
       confetti({
-        particleCount: 35,
-        spread: 55,
+        particleCount: difficultyLevel === 'hard' ? 50 : 35,
+        spread: 60,
         origin: { y: 0.6 }
       });
     } else {
@@ -43,7 +70,7 @@ export const MathZone: React.FC<MathZoneProps> = ({ onEarnRewards }) => {
     sound.playPop();
     setIsAnswered(false);
     setSelectedOption(null);
-    setCurrentIdx((prev) => (prev + 1) % MATH_DATA.length);
+    setCurrentIdx((prev) => (prev + 1) % activeDataset.length);
   };
 
   const renderVisuals = () => {
@@ -164,6 +191,21 @@ export const MathZone: React.FC<MathZoneProps> = ({ onEarnRewards }) => {
         </div>
 
         <div className="flex items-center gap-2">
+          {onOpenSettings && (
+            <button
+              onClick={() => {
+                sound.playPop();
+                onOpenSettings();
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs border transition-all hover:scale-105 cursor-pointer ${diffConfig.borderClass} ${diffConfig.bgClass} ${diffConfig.textClass}`}
+              title="تعديل مستوى الصعوبة للأنشطة"
+            >
+              <span>{diffConfig.icon}</span>
+              <span>المستوى: {diffConfig.labelShort}</span>
+              <span className="text-[10px] opacity-75 underline mr-1">(تغيير)</span>
+            </button>
+          )}
+
           <button
             onClick={() => sound.speakArabic(currentItem.question)}
             className="flex items-center gap-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-1.5 rounded-xl font-bold text-xs"
@@ -172,7 +214,7 @@ export const MathZone: React.FC<MathZoneProps> = ({ onEarnRewards }) => {
             <span>اقْرَأِ السُّؤَال</span>
           </button>
           <span className="text-xs font-bold bg-amber-100 text-amber-900 px-3 py-1.5 rounded-full">
-            تَمْرِين {currentIdx + 1} مِنْ {MATH_DATA.length}
+            تَمْرِين {currentIdx + 1} مِنْ {activeDataset.length}
           </span>
         </div>
       </div>

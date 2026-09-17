@@ -1,6 +1,7 @@
 import React from 'react';
-import { Sparkles, Flame, Volume2, VolumeX, Award, Heart, Users, User, LogIn, Settings, Palette } from 'lucide-react';
-import { UserProgress, UserAccount, AppTheme } from '../types';
+import { Sparkles, Flame, Volume2, VolumeX, Award, Heart, Users, User, LogIn, Settings, Palette, GraduationCap } from 'lucide-react';
+import { UserProgress, UserAccount, AppTheme, DifficultyLevel } from '../types';
+import { getDifficultyConfig } from '../data/difficultyData';
 import { sound } from '../utils/soundEffects';
 import { EDUCATIONAL_CHARACTERS } from '../data/charactersData';
 
@@ -8,6 +9,7 @@ interface HeaderProps {
   progress: UserProgress;
   currentUser: UserAccount | null;
   theme?: AppTheme;
+  difficultyLevel?: DifficultyLevel;
   isSoundOn: boolean;
   onToggleSound: () => void;
   onOpenRewards: () => void;
@@ -20,6 +22,7 @@ export const Header: React.FC<HeaderProps> = ({
   progress,
   currentUser,
   theme,
+  difficultyLevel = 'medium',
   isSoundOn,
   onToggleSound,
   onOpenRewards,
@@ -27,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAuth,
   onOpenSettings
 }) => {
+  const diffConfig = getDifficultyConfig(difficultyLevel);
   // Compute level titles
   const getLevelTitle = (level: number) => {
     if (level === 1) return 'بُرْعُمٌ مُكْتَشِف';
@@ -186,6 +190,21 @@ export const Header: React.FC<HeaderProps> = ({
               <span>تَجْرِبَةُ النُّطْق</span>
             </button>
           )}
+
+          {/* Difficulty Level Button (Parent controls quick access) */}
+          <button
+            type="button"
+            onClick={() => {
+              sound.playPop();
+              if (onOpenSettings) onOpenSettings();
+            }}
+            className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-2.5 sm:px-3 py-1.5 rounded-xl border border-white/30 shadow-xs active:scale-95 transition-all cursor-pointer font-kids text-xs font-bold"
+            title="تعديل مستوى الصعوبة للأنشطة (خيار الوالدين)"
+          >
+            <GraduationCap className="w-4 h-4 text-yellow-300" />
+            <span>{diffConfig.icon}</span>
+            <span className="hidden sm:inline">{diffConfig.labelShort}</span>
+          </button>
 
           {/* Theme Customizer & Settings button */}
           <button

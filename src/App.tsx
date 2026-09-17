@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppTab, UserProgress, UserAccount, ThemeId, ButtonStyleVariant } from './types';
+import { AppTab, UserProgress, UserAccount, ThemeId, ButtonStyleVariant, DifficultyLevel } from './types';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { LetterExplorer } from './components/LetterExplorer';
@@ -15,6 +15,7 @@ import { AuthModal } from './components/AuthModal';
 import { SettingsModal } from './components/SettingsModal';
 import { EDUCATIONAL_CHARACTERS, SYSTEM_BADGES } from './data/charactersData';
 import { APP_THEMES, DEFAULT_THEME_ID, DEFAULT_BUTTON_STYLE, BUTTON_STYLE_CLASSES, getTheme } from './data/themesData';
+import { DEFAULT_DIFFICULTY_LEVEL, getDifficultyConfig } from './data/difficultyData';
 import { sound } from './utils/soundEffects';
 import { 
   getActiveUser, 
@@ -22,12 +23,13 @@ import {
   saveActiveUserProgress, 
   DEFAULT_INITIAL_PROGRESS 
 } from './utils/authStorage';
-import { Volume2, Sparkles, Heart, Users, Gamepad2, X, LogIn, KeyRound, UserCheck, Palette, Settings } from 'lucide-react';
+import { Volume2, Sparkles, Heart, Users, Gamepad2, X, LogIn, KeyRound, UserCheck, Palette, Settings, GraduationCap } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 const STORAGE_KEY = 'egyptian_grade1_arabic_math_v2';
 const THEME_STORAGE_KEY = 'egyptian_grade1_theme_id';
 const BUTTON_STYLE_STORAGE_KEY = 'egyptian_grade1_btn_style';
+const DIFFICULTY_STORAGE_KEY = 'egyptian_grade1_difficulty_level';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<AppTab>('games');
@@ -56,6 +58,22 @@ export default function App() {
       // Ignore
     }
     return DEFAULT_INITIAL_PROGRESS;
+  });
+
+  // Difficulty state
+  const [currentDifficulty, setCurrentDifficulty] = useState<DifficultyLevel>(() => {
+    if (progress?.difficultyLevel && (progress.difficultyLevel === 'easy' || progress.difficultyLevel === 'medium' || progress.difficultyLevel === 'hard')) {
+      return progress.difficultyLevel;
+    }
+    try {
+      const saved = localStorage.getItem(DIFFICULTY_STORAGE_KEY) as DifficultyLevel;
+      if (saved && (saved === 'easy' || saved === 'medium' || saved === 'hard')) {
+        return saved;
+      }
+    } catch {
+      // Ignore
+    }
+    return DEFAULT_DIFFICULTY_LEVEL;
   });
 
   // Theme state
@@ -92,6 +110,20 @@ export default function App() {
 
   const activeTheme = getTheme(currentThemeId);
   const activeBtnConfig = BUTTON_STYLE_CLASSES[currentButtonStyle] || BUTTON_STYLE_CLASSES.rounded;
+  const activeDiffConfig = getDifficultyConfig(currentDifficulty);
+
+  const handleSelectDifficulty = (level: DifficultyLevel) => {
+    setCurrentDifficulty(level);
+    try {
+      localStorage.setItem(DIFFICULTY_STORAGE_KEY, level);
+    } catch {
+      // Ignore
+    }
+    setProgress(prev => ({
+      ...prev,
+      difficultyLevel: level
+    }));
+  };
 
   // Save progress changes locally and to user account
   useEffect(() => {
@@ -121,6 +153,9 @@ export default function App() {
     setCurrentUser(user);
     if (user.progress) {
       setProgress(user.progress);
+      if (user.progress.difficultyLevel) {
+        setCurrentDifficulty(user.progress.difficultyLevel);
+      }
     }
     setShowAuthModal(false);
   };
@@ -228,6 +263,7 @@ export default function App() {
         progress={progress}
         currentUser={currentUser}
         theme={activeTheme}
+        difficultyLevel={currentDifficulty}
         isSoundOn={isSoundOn}
         onToggleSound={handleToggleSound}
         onOpenRewards={() => setCurrentTab('rewards')}
@@ -301,6 +337,20 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Quick Difficulty Level Switcher for Parents */}
+            <button
+              type="button"
+              onClick={() => {
+                sound.playPop();
+                setShowSettingsModal(true);
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 font-kids font-bold text-xs shadow-xs transition-all cursor-pointer ${activeTheme.secondaryBtnClass} ${activeBtnConfig.className}`}
+              title="تعديل مستوى الصعوبة للألعاب والأنشطة (تحكم الوالدين)"
+            >
+              <GraduationCap className="w-4 h-4 text-indigo-600" />
+              <span>المستوى: {activeDiffConfig.icon} {activeDiffConfig.labelShort}</span>
+            </button>
+
             {/* Quick Theme Customizer Button */}
             <button
               type="button"
@@ -346,6 +396,8 @@ export default function App() {
           <MiniGamesHub
             onEarnRewards={handleEarnRewards}
             onCompleteGameScore={handleCompleteGameScore}
+            difficultyLevel={currentDifficulty}
+            onOpenSettings={() => setShowSettingsModal(true)}
           />
         )}
 
@@ -362,7 +414,11 @@ export default function App() {
         )}
 
         {currentTab === 'math' && (
-          <MathZone onEarnRewards={handleEarnRewards} />
+          <MathZone 
+            onEarnRewards={handleEarnRewards} 
+            difficultyLevel={currentDifficulty}
+            onOpenSettings={() => setShowSettingsModal(true)}
+          />
         )}
 
         {currentTab === 'stories' && (
@@ -370,7 +426,11 @@ export default function App() {
         )}
 
         {currentTab === 'quiz' && (
-          <QuizModal onEarnRewards={handleEarnRewards} />
+          <QuizModal 
+            onEarnRewards={handleEarnRewards} 
+            difficultyLevel={currentDifficulty}
+            onOpenSettings={() => setShowSettingsModal(true)}
+          />
         )}
 
         {currentTab === 'rewards' && (
@@ -463,6 +523,8 @@ export default function App() {
         onClose={() => setShowSettingsModal(false)}
         currentThemeId={currentThemeId}
         currentButtonStyle={currentButtonStyle}
+        currentDifficulty={currentDifficulty}
+        onSelectDifficulty={handleSelectDifficulty}
         onSelectTheme={(themeId) => {
           setCurrentThemeId(themeId);
           try {

@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { sound } from '../../utils/soundEffects';
-import { Sparkles, CheckCircle2, RotateCcw, Volume2, ArrowLeft, Trophy } from 'lucide-react';
+import { Sparkles, CheckCircle2, RotateCcw, Volume2, ArrowLeft, Trophy, GraduationCap } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { DifficultyLevel } from '../../types';
+import { getDifficultyConfig } from '../../data/difficultyData';
 
 interface MathGameProps {
   onEarnRewards: (stars: number, coins: number, xp: number) => void;
   onCompleteGameScore?: (game: 'reading' | 'writing' | 'math') => void;
+  difficultyLevel?: DifficultyLevel;
+  onOpenSettings?: () => void;
 }
 
 interface BananaProblem {
@@ -22,69 +26,172 @@ interface BananaProblem {
   explanation: string;
 }
 
-export const MathGame: React.FC<MathGameProps> = ({ onEarnRewards, onCompleteGameScore }) => {
-  const problems: BananaProblem[] = [
-    {
-      id: 'm1',
-      question: 'أَطْعِمْ سِمْسِم: كَمْ مَوْزَةً لَذِيذَةً فِي الشَّاشَةِ؟ 🍌',
-      type: 'count',
-      targetNumber: 4,
-      countGroupA: 4,
-      fruitEmoji: '🍌',
-      options: [3, 4, 5, 2],
-      correctAnswer: 4,
-      explanation: 'عَفَارِم يَا عَبْقَرِيّ! هُنَاكَ ٤ مَوْزَاتٍ لَذِيذَةٍ!'
-    },
-    {
-      id: 'm2',
-      question: 'مَعَ سِمْسِم ٣ تُفَّاحَات 🍎 وَأَعْطَاهُ صَدِيقُهُ ٢ تُفَّاحَة 🍎.. كَمْ كُلُّ التُّفَّاح؟',
-      type: 'add',
-      targetNumber: 5,
-      countGroupA: 3,
-      countGroupB: 2,
-      symbol: '+',
-      fruitEmoji: '🍎',
-      options: [4, 5, 6, 3],
-      correctAnswer: 5,
-      explanation: 'بَطَل! ٣ + ٢ = ٥ تُفَّاحَاتٍ!'
-    },
-    {
-      id: 'm3',
-      question: 'قَارِنْ: مَجْمُوعَةُ ٥ فَرَاوْلَة 🍓 أَمْ مَجْمُوعَةُ ٣ فَرَاوْلَة 🍓؟ اخْتَرِ الْعَلَامَةَ:',
-      type: 'compare',
-      targetNumber: 5,
-      countGroupA: 5,
-      countGroupB: 3,
-      fruitEmoji: '🍓',
-      options: ['أَكْبَرُ مِنْ ( > )', 'أَصْغَرُ مِنْ ( < )', 'يُسَاوِي ( = )'],
-      correctAnswer: 'أَكْبَرُ مِنْ ( > )',
-      explanation: 'مُمْتَاز! ٥ فَرَاوْلَة أَكْبَرُ مِنْ ( > ) ٣ فَرَاوْلَة!'
-    },
-    {
-      id: 'm4',
-      question: 'عُدَّ الْبُرْتُقَالَاتِ الْمُنْعِشَة: كَمْ بُرْتُقَالَةً مَعَنَا؟ 🍊',
-      type: 'count',
-      targetNumber: 6,
-      countGroupA: 6,
-      fruitEmoji: '🍊',
-      options: [5, 6, 7, 4],
-      correctAnswer: 6,
-      explanation: 'أَحْسَنْتَ! هُنَاكَ ٦ بُرْتُقَالَاتٍ!'
-    },
-    {
-      id: 'm5',
-      question: 'مَسْأَلَةُ الْجَمْعِ السَّرِيع: ٤ مَوْزَات 🍌 + ٣ مَوْزَات 🍌 = ؟',
-      type: 'add',
-      targetNumber: 7,
-      countGroupA: 4,
-      countGroupB: 3,
-      symbol: '+',
-      fruitEmoji: '🍌',
-      options: [6, 7, 8, 5],
-      correctAnswer: 7,
-      explanation: 'رَائِعٌ جِدًّا! ٤ + ٣ = ٧ مَوْزَاتٍ لِسِمْسِم!'
-    }
-  ];
+const EASY_PROBLEMS: BananaProblem[] = [
+  {
+    id: 'em1',
+    question: 'أَطْعِمْ سِمْسِم: كَمْ مَوْزَةً لَذِيذَةً فِي الشَّاشَةِ؟ 🍌',
+    type: 'count',
+    targetNumber: 3,
+    countGroupA: 3,
+    fruitEmoji: '🍌',
+    options: [2, 3, 4],
+    correctAnswer: 3,
+    explanation: 'عَفَارِم يَا عَبْقَرِيّ! هُنَاكَ ٣ مَوْزَاتٍ لَذِيذَةٍ!'
+  },
+  {
+    id: 'em2',
+    question: 'مَعَ سِمْسِم ٢ تُفَّاحَة 🍎 وَأَعْطَاهُ صَدِيقُهُ ١ تُفَّاحَة 🍎.. كَمْ كُلُّ التُّفَّاح؟',
+    type: 'add',
+    targetNumber: 3,
+    countGroupA: 2,
+    countGroupB: 1,
+    symbol: '+',
+    fruitEmoji: '🍎',
+    options: [2, 3, 4],
+    correctAnswer: 3,
+    explanation: 'بَطَل! ٢ + ١ = ٣ تُفَّاحَاتٍ!'
+  },
+  {
+    id: 'em3',
+    question: 'قَارِنْ: مَجْمُوعَةُ ٤ فَرَاوْلَة 🍓 أَمْ مَجْمُوعَةُ ٢ فَرَاوْلَة 🍓؟',
+    type: 'compare',
+    targetNumber: 4,
+    countGroupA: 4,
+    countGroupB: 2,
+    fruitEmoji: '🍓',
+    options: ['أَكْبَرُ مِنْ ( > )', 'أَصْغَرُ مِنْ ( < )'],
+    correctAnswer: 'أَكْبَرُ مِنْ ( > )',
+    explanation: 'مُمْتَاز! ٤ فَرَاوْلَة أَكْبَرُ مِنْ ( > ) ٢ فَرَاوْلَة!'
+  },
+  {
+    id: 'em4',
+    question: 'عُدَّ الْبُرْتُقَالَاتِ الْمُنْعِشَة: كَمْ بُرْتُقَالَةً مَعَنَا؟ 🍊',
+    type: 'count',
+    targetNumber: 4,
+    countGroupA: 4,
+    fruitEmoji: '🍊',
+    options: [3, 4, 5],
+    correctAnswer: 4,
+    explanation: 'أَحْسَنْتَ! هُنَاكَ ٤ بُرْتُقَالَاتٍ!'
+  }
+];
+
+const STANDARD_PROBLEMS: BananaProblem[] = [
+  {
+    id: 'm1',
+    question: 'أَطْعِمْ سِمْسِم: كَمْ مَوْزَةً لَذِيذَةً فِي الشَّاشَةِ؟ 🍌',
+    type: 'count',
+    targetNumber: 4,
+    countGroupA: 4,
+    fruitEmoji: '🍌',
+    options: [3, 4, 5, 2],
+    correctAnswer: 4,
+    explanation: 'عَفَارِم يَا عَبْقَرِيّ! هُنَاكَ ٤ مَوْزَاتٍ لَذِيذَةٍ!'
+  },
+  {
+    id: 'm2',
+    question: 'مَعَ سِمْسِم ٣ تُفَّاحَات 🍎 وَأَعْطَاهُ صَدِيقُهُ ٢ تُفَّاحَة 🍎.. كَمْ كُلُّ التُّفَّاح؟',
+    type: 'add',
+    targetNumber: 5,
+    countGroupA: 3,
+    countGroupB: 2,
+    symbol: '+',
+    fruitEmoji: '🍎',
+    options: [4, 5, 6, 3],
+    correctAnswer: 5,
+    explanation: 'بَطَل! ٣ + ٢ = ٥ تُفَّاحَاتٍ!'
+  },
+  {
+    id: 'm3',
+    question: 'قَارِنْ: مَجْمُوعَةُ ٥ فَرَاوْلَة 🍓 أَمْ مَجْمُوعَةُ ٣ فَرَاوْلَة 🍓؟ اخْتَرِ الْعَلَامَةَ:',
+    type: 'compare',
+    targetNumber: 5,
+    countGroupA: 5,
+    countGroupB: 3,
+    fruitEmoji: '🍓',
+    options: ['أَكْبَرُ مِنْ ( > )', 'أَصْغَرُ مِنْ ( < )', 'يُسَاوِي ( = )'],
+    correctAnswer: 'أَكْبَرُ مِنْ ( > )',
+    explanation: 'مُمْتَاز! ٥ فَرَاوْلَة أَكْبَرُ مِنْ ( > ) ٣ فَرَاوْلَة!'
+  },
+  {
+    id: 'm4',
+    question: 'عُدَّ الْبُرْتُقَالَاتِ الْمُنْعِشَة: كَمْ بُرْتُقَالَةً مَعَنَا؟ 🍊',
+    type: 'count',
+    targetNumber: 6,
+    countGroupA: 6,
+    fruitEmoji: '🍊',
+    options: [5, 6, 7, 4],
+    correctAnswer: 6,
+    explanation: 'أَحْسَنْتَ! هُنَاكَ ٦ بُرْتُقَالَاتٍ!'
+  },
+  {
+    id: 'm5',
+    question: 'مَسْأَلَةُ الْجَمْعِ السَّرِيع: ٤ مَوْزَات 🍌 + ٣ مَوْزَات 🍌 = ؟',
+    type: 'add',
+    targetNumber: 7,
+    countGroupA: 4,
+    countGroupB: 3,
+    symbol: '+',
+    fruitEmoji: '🍌',
+    options: [6, 7, 8, 5],
+    correctAnswer: 7,
+    explanation: 'رَائِعٌ جِدًّا! ٤ + ٣ = ٧ مَوْزَاتٍ لِسِمْسِم!'
+  }
+];
+
+const HARD_PROBLEMS: BananaProblem[] = [
+  {
+    id: 'hm1',
+    question: 'تَحَدِّي الْأَبْطَال: ٨ مَوْزَات 🍌 + ٥ مَوْزَات 🍌 = ؟',
+    type: 'add',
+    targetNumber: 13,
+    countGroupA: 8,
+    countGroupB: 5,
+    symbol: '+',
+    fruitEmoji: '🍌',
+    options: [12, 13, 14, 11],
+    correctAnswer: 13,
+    explanation: 'عَبْقَرِيّ! ٨ + ٥ = ١٣ مَوْزَةً ذِهْنِيًّا!'
+  },
+  {
+    id: 'hm2',
+    question: 'قَارِنْ بِذَكَاء: مَجْمُوعَةُ (٢٤) تُفَّاحَة 🍎 أَمْ مَجْمُوعَةُ (١٩) تُفَّاحَة 🍎؟',
+    type: 'compare',
+    targetNumber: 24,
+    countGroupA: 12,
+    countGroupB: 10,
+    fruitEmoji: '🍎',
+    options: ['أَكْبَرُ مِنْ ( > )', 'أَصْغَرُ مِنْ ( < )', 'يُسَاوِي ( = )'],
+    correctAnswer: 'أَكْبَرُ مِنْ ( > )',
+    explanation: 'مُمْتَاز! ٢٤ أَكْبَرُ مِنْ ( > ) ١٩!'
+  },
+  {
+    id: 'hm3',
+    question: 'مَسْأَلَةُ الْعَشَرَات: ١٠ فَرَاوْلَة 🍓 + ٨ فَرَاوْلَة 🍓 = ؟',
+    type: 'add',
+    targetNumber: 18,
+    countGroupA: 10,
+    countGroupB: 8,
+    symbol: '+',
+    fruitEmoji: '🍓',
+    options: [16, 17, 18, 19],
+    correctAnswer: 18,
+    explanation: 'رَائِع! ١٠ + ٨ = ١٨ فَرَاوْلَةً!'
+  }
+];
+
+export const MathGame: React.FC<MathGameProps> = ({ 
+  onEarnRewards, 
+  onCompleteGameScore,
+  difficultyLevel = 'medium',
+  onOpenSettings
+}) => {
+  const diffConfig = getDifficultyConfig(difficultyLevel);
+  const problems: BananaProblem[] = difficultyLevel === 'easy'
+    ? EASY_PROBLEMS
+    : difficultyLevel === 'hard'
+      ? HARD_PROBLEMS
+      : STANDARD_PROBLEMS;
 
   const [currentIdx, setCurrentIdx] = useState<number>(0);
   const [selectedOption, setSelectedOption] = useState<number | string | null>(null);
@@ -104,7 +211,10 @@ export const MathGame: React.FC<MathGameProps> = ({ onEarnRewards, onCompleteGam
       sound.playSuccess();
       sound.speakArabic(activeProblem.explanation);
       setFedBananas(prev => prev + 1);
-      onEarnRewards(2, 5, 20);
+      const stars = difficultyLevel === 'hard' ? 3 : 2;
+      const coins = difficultyLevel === 'hard' ? 8 : 5;
+      const xp = Math.round(20 * diffConfig.rewardMultiplier);
+      onEarnRewards(stars, coins, xp);
       if (onCompleteGameScore) onCompleteGameScore('math');
       confetti({ particleCount: 40, spread: 60, origin: { y: 0.6 } });
     } else {
@@ -124,7 +234,10 @@ export const MathGame: React.FC<MathGameProps> = ({ onEarnRewards, onCompleteGam
       setIsGameFinished(true);
       sound.playFanfare();
       sound.speakArabic('مَبْرُوكٌ يَا عَبْقَرِيَّ الْحِسَاب! لَقَدْ أَطْعَمْتَ سِمْسِم وَحَلَلْتَ كُلَّ الْمَسَائِلِ بِتَفَوُّق!');
-      onEarnRewards(5, 20, 50);
+      const bonusStars = difficultyLevel === 'hard' ? 8 : 5;
+      const bonusCoins = difficultyLevel === 'hard' ? 30 : 20;
+      const bonusXp = Math.round(50 * diffConfig.rewardMultiplier);
+      onEarnRewards(bonusStars, bonusCoins, bonusXp);
       confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
     }
   };
@@ -149,12 +262,12 @@ export const MathGame: React.FC<MathGameProps> = ({ onEarnRewards, onCompleteGam
           سِمْسِمُ سَعِيدٌ جِدًّا بِكَ!
         </h3>
         <p className="text-slate-600 font-medium text-sm sm:text-base">
-          لَقَدْ أَطْعَمْتَ سِمْسِم <strong>{fedBananas}</strong> فَاكِهَةٍ لَذِيذَةٍ وَفُزْتَ بِـ <strong>٢٠ عُمْلَةً 🪙</strong> وَ <strong>٥ نُجُومٍ ⭐</strong>!
+          لَقَدْ أَطْعَمْتَ سِمْسِم <strong>{fedBananas}</strong> فَاكِهَةٍ لَذِيذَةٍ بِمُسْتَوَى <strong>({diffConfig.labelShort})</strong>!
         </p>
 
         <button
           onClick={handleRestart}
-          className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 text-white font-kids font-bold text-base px-8 py-3 rounded-2xl shadow-md inline-flex items-center gap-2 transition-all active:scale-95"
+          className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 text-white font-kids font-bold text-base px-8 py-3 rounded-2xl shadow-md inline-flex items-center gap-2 transition-all active:scale-95 cursor-pointer"
         >
           <RotateCcw className="w-5 h-5" />
           <span>الْعَبْ مَرَّةً ثَانِيَة</span>
@@ -179,10 +292,27 @@ export const MathGame: React.FC<MathGameProps> = ({ onEarnRewards, onCompleteGam
           </p>
         </div>
 
-        {/* Monkey Hunger / Banana fed counter */}
-        <div className="flex items-center gap-2 bg-white/25 px-3 py-1.5 rounded-2xl border border-white/30 text-xs font-bold">
-          <span>شَبَعُ سِمْسِم:</span>
-          <span className="text-yellow-200">🍌 {fedBananas} / {problems.length}</span>
+        {/* Status Indicators: Difficulty & Hunger */}
+        <div className="flex items-center gap-2">
+          {onOpenSettings && (
+            <button
+              onClick={() => {
+                sound.playPop();
+                onOpenSettings();
+              }}
+              className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white px-2.5 py-1.5 rounded-2xl border border-white/30 text-xs font-bold transition-all cursor-pointer"
+              title="تعديل مستوى الصعوبة للألعاب"
+            >
+              <GraduationCap className="w-3.5 h-3.5" />
+              <span>{diffConfig.icon} {diffConfig.labelShort}</span>
+            </button>
+          )}
+
+          {/* Monkey Hunger / Banana fed counter */}
+          <div className="flex items-center gap-2 bg-white/25 px-3 py-1.5 rounded-2xl border border-white/30 text-xs font-bold">
+            <span>شَبَعُ سِمْسِم:</span>
+            <span className="text-yellow-200">🍌 {fedBananas} / {problems.length}</span>
+          </div>
         </div>
       </div>
 

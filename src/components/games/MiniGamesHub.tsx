@@ -3,20 +3,27 @@ import { ReadingGame } from './ReadingGame';
 import { WritingGame } from './WritingGame';
 import { MathGame } from './MathGame';
 import { sound } from '../../utils/soundEffects';
-import { BookOpen, PenTool, Calculator, Sparkles, Award } from 'lucide-react';
+import { BookOpen, PenTool, Calculator, Sparkles, Award, GraduationCap } from 'lucide-react';
+import { DifficultyLevel } from '../../types';
+import { getDifficultyConfig } from '../../data/difficultyData';
 
 interface MiniGamesHubProps {
   onEarnRewards: (stars: number, coins: number, xp: number) => void;
   onCompleteGameScore?: (game: 'reading' | 'writing' | 'math') => void;
+  difficultyLevel?: DifficultyLevel;
+  onOpenSettings?: () => void;
 }
 
 type ActiveSubGame = 'reading' | 'writing' | 'math';
 
 export const MiniGamesHub: React.FC<MiniGamesHubProps> = ({
   onEarnRewards,
-  onCompleteGameScore
+  onCompleteGameScore,
+  difficultyLevel = 'medium',
+  onOpenSettings
 }) => {
   const [activeGame, setActiveGame] = useState<ActiveSubGame>('reading');
+  const diffConfig = getDifficultyConfig(difficultyLevel);
 
   const gameTabs = [
     {
@@ -51,34 +58,52 @@ export const MiniGamesHub: React.FC<MiniGamesHubProps> = ({
   return (
     <div className="space-y-6">
       {/* Sub-Tabs Switcher */}
-      <div className="bg-white rounded-3xl p-3 sm:p-4 shadow-sm border border-amber-100 flex items-center justify-center gap-2 overflow-x-auto">
-        {gameTabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeGame === tab.id;
+      <div className="bg-white rounded-3xl p-3 sm:p-4 shadow-sm border border-amber-100 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2 overflow-x-auto py-1">
+          {gameTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeGame === tab.id;
 
-          return (
-            <button
-              key={tab.id}
-              onClick={() => {
-                sound.playPop();
-                setActiveGame(tab.id);
-              }}
-              className={`flex items-center gap-2 px-4 py-3 rounded-2xl font-kids font-black text-xs sm:text-sm whitespace-nowrap transition-all duration-200 active:scale-95 ${
-                isActive
-                  ? `${tab.activeBg} shadow-md scale-102 ring-2 ring-white`
-                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200'
-              }`}
-            >
-              <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive ? 'text-white' : tab.color}`} />
-              <div className="text-right">
-                <div>{tab.title}</div>
-                <div className={`text-[10px] font-bold ${isActive ? 'text-white/80' : 'text-slate-400'}`}>
-                  مَعَ {tab.character}
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  sound.playPop();
+                  setActiveGame(tab.id);
+                }}
+                className={`flex items-center gap-2 px-4 py-3 rounded-2xl font-kids font-black text-xs sm:text-sm whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer ${
+                  isActive
+                    ? `${tab.activeBg} shadow-md scale-102 ring-2 ring-white`
+                    : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200'
+                }`}
+              >
+                <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive ? 'text-white' : tab.color}`} />
+                <div className="text-right">
+                  <div>{tab.title}</div>
+                  <div className={`text-[10px] font-bold ${isActive ? 'text-white/80' : 'text-slate-400'}`}>
+                    مَعَ {tab.character}
+                  </div>
                 </div>
-              </div>
-            </button>
-          );
-        })}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Difficulty level badge / quick switcher */}
+        {onOpenSettings && (
+          <button
+            onClick={() => {
+              sound.playPop();
+              onOpenSettings();
+            }}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl font-kids font-bold text-xs border transition-all hover:scale-105 cursor-pointer shadow-2xs ${diffConfig.borderClass} ${diffConfig.bgClass} ${diffConfig.textClass}`}
+            title="تعديل مستوى الصعوبة للألعاب"
+          >
+            <GraduationCap className="w-4 h-4" />
+            <span>المستوى: {diffConfig.icon} {diffConfig.labelShort}</span>
+            <span className="text-[10px] underline mr-1 opacity-80">(تعديل)</span>
+          </button>
+        )}
       </div>
 
       {/* Render Active Mini Game */}
@@ -100,6 +125,8 @@ export const MiniGamesHub: React.FC<MiniGamesHubProps> = ({
         <MathGame
           onEarnRewards={onEarnRewards}
           onCompleteGameScore={onCompleteGameScore}
+          difficultyLevel={difficultyLevel}
+          onOpenSettings={onOpenSettings}
         />
       )}
     </div>
