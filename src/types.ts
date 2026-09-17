@@ -123,6 +123,8 @@ export interface UserProgress {
   unlockedStickers: string[];
   unlockedBadges: string[];
   selectedCharacterId?: string;
+  themeId?: ThemeId;
+  buttonStyle?: ButtonStyleVariant;
   gameStats?: {
     readingScore: number;
     writingScore: number;
@@ -130,6 +132,37 @@ export interface UserProgress {
     gamesPlayed: number;
   };
   lastWheelSpinDate?: string;
+}
+
+export type ThemeId = 'sunshine' | 'space' | 'forest' | 'ocean' | 'candy';
+export type ButtonStyleVariant = 'rounded' | '3d' | 'classic';
+
+export interface AppTheme {
+  id: ThemeId;
+  name: string;
+  nameEn: string;
+  icon: string;
+  tagline: string;
+  description: string;
+  palette: string[];
+  isDark: boolean;
+  pageBgClass: string;
+  pageGradientStyle?: string;
+  headerGradient: string;
+  heroBgClass: string;
+  navBgClass: string;
+  navBorderClass: string;
+  navActiveClass: string;
+  primaryBtnClass: string;
+  secondaryBtnClass: string;
+  accentBtnClass: string;
+  cardBgClass: string;
+  cardBorderClass: string;
+  textPrimaryClass: string;
+  textSecondaryClass: string;
+  footerBgClass: string;
+  accentBadgeClass: string;
+  glowClass: string;
 }
 
 export interface Sticker {

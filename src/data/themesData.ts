@@ -1,0 +1,167 @@
+import { AppTheme, ThemeId, ButtonStyleVariant } from '../types';
+
+export const APP_THEMES: AppTheme[] = [
+  {
+    id: 'sunshine',
+    name: 'شروق الشمس الذهبي',
+    nameEn: 'Golden Sunshine',
+    icon: '☀️',
+    tagline: 'دافئ، مشرق وممتلئ بالحيوية والبهجة',
+    description: 'الألوان الدافئة المحبوبة لصف أول ابتدائي، تجمع بين العسل الذهبي والوردي الجميل.',
+    palette: ['#F59E0B', '#F43F5E', '#6366F1', '#FFFDF6'],
+    isDark: false,
+    pageBgClass: 'bg-[#FFFDF6] text-slate-800',
+    pageGradientStyle: 'radial-gradient(ellipse at 50% 0%, #FEF3C7 0%, #FFFDF6 70%)',
+    headerGradient: 'bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-500',
+    heroBgClass: 'bg-gradient-to-r from-amber-100/70 via-rose-50/50 to-indigo-50/60 border-b border-amber-200/50 text-slate-800',
+    navBgClass: 'bg-white/95 backdrop-blur-md',
+    navBorderClass: 'border-amber-100',
+    navActiveClass: 'bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-md shadow-amber-200 ring-2 ring-amber-300',
+    primaryBtnClass: 'bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white shadow-md shadow-amber-200 border-2 border-amber-200',
+    secondaryBtnClass: 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-2 border-amber-200',
+    accentBtnClass: 'bg-yellow-400 hover:bg-yellow-300 text-amber-950 shadow-md border-2 border-yellow-200',
+    cardBgClass: 'bg-white text-slate-800 border-2 border-amber-100/80 shadow-md shadow-amber-100/30',
+    cardBorderClass: 'border-amber-200',
+    textPrimaryClass: 'text-slate-800',
+    textSecondaryClass: 'text-slate-600',
+    footerBgClass: 'bg-amber-100/70 border-t border-amber-200/80 text-amber-950',
+    accentBadgeClass: 'bg-amber-100 text-amber-900 border border-amber-300',
+    glowClass: 'shadow-amber-300/40 ring-amber-300'
+  },
+  {
+    id: 'space',
+    name: 'الفضاء الكوني',
+    nameEn: 'Cosmic Space',
+    icon: '🚀',
+    tagline: 'رحلة بين النجوم والكواكب والمجرات اللامعة',
+    description: 'مظهر فضائي ليلي ساحر يريح العين، مع أزرار نيون سديمية براقة ونجوم متلألئة.',
+    palette: ['#38BDF8', '#818CF8', '#C084FC', '#090D1A'],
+    isDark: true,
+    pageBgClass: 'bg-[#090D1A] text-slate-100',
+    pageGradientStyle: 'radial-gradient(ellipse at 50% 0%, #1e1b4b 0%, #0c1222 55%, #090d1a 100%)',
+    headerGradient: 'bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 border-b border-cyan-500/30 shadow-cyan-900/20',
+    heroBgClass: 'bg-gradient-to-r from-indigo-950/80 via-slate-900/80 to-purple-950/80 border-b border-indigo-500/30 text-indigo-100',
+    navBgClass: 'bg-[#0e1529]/95 backdrop-blur-md',
+    navBorderClass: 'border-indigo-900/80',
+    navActiveClass: 'bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-300',
+    primaryBtnClass: 'bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white shadow-lg shadow-cyan-500/25 border-2 border-cyan-300/40',
+    secondaryBtnClass: 'bg-[#151d38] hover:bg-[#1d274c] text-cyan-300 border-2 border-indigo-500/40',
+    accentBtnClass: 'bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-black shadow-lg shadow-amber-400/20 border-2 border-yellow-200',
+    cardBgClass: 'bg-[#111936] text-slate-100 border-2 border-indigo-800/70 shadow-xl shadow-black/50',
+    cardBorderClass: 'border-indigo-700/60',
+    textPrimaryClass: 'text-slate-100',
+    textSecondaryClass: 'text-indigo-200/90',
+    footerBgClass: 'bg-[#080c18] border-t border-indigo-900/60 text-indigo-200',
+    accentBadgeClass: 'bg-indigo-950/90 text-cyan-300 border border-cyan-400/40',
+    glowClass: 'shadow-cyan-400/40 ring-cyan-400'
+  },
+  {
+    id: 'forest',
+    name: 'الغابة الخضراء',
+    nameEn: 'Lush Forest',
+    icon: '🌲',
+    tagline: 'مغامرة وسط الأشجار، الحيوانات اللطيفة والطبيعة',
+    description: 'ألوان مستوحاة من أوراق الشجر والزمرد الطبيعي والزهور البرية المبهجة.',
+    palette: ['#059669', '#10B981', '#F59E0B', '#F2FBF6'],
+    isDark: false,
+    pageBgClass: 'bg-[#F2FBF6] text-emerald-950',
+    pageGradientStyle: 'radial-gradient(ellipse at 50% 0%, #D1FAE5 0%, #F2FBF6 70%)',
+    headerGradient: 'bg-gradient-to-r from-emerald-600 via-teal-600 to-green-700',
+    heroBgClass: 'bg-gradient-to-r from-emerald-100/70 via-teal-50/60 to-green-100/60 border-b border-emerald-200/70 text-emerald-950',
+    navBgClass: 'bg-white/95 backdrop-blur-md',
+    navBorderClass: 'border-emerald-100',
+    navActiveClass: 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-200 ring-2 ring-emerald-300',
+    primaryBtnClass: 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md shadow-emerald-200 border-2 border-emerald-300',
+    secondaryBtnClass: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-2 border-emerald-300',
+    accentBtnClass: 'bg-amber-400 hover:bg-amber-300 text-amber-950 shadow-md border-2 border-amber-200',
+    cardBgClass: 'bg-white text-slate-800 border-2 border-emerald-100 shadow-md shadow-emerald-100/30',
+    cardBorderClass: 'border-emerald-200',
+    textPrimaryClass: 'text-emerald-950',
+    textSecondaryClass: 'text-emerald-800/80',
+    footerBgClass: 'bg-emerald-100/70 border-t border-emerald-200/80 text-emerald-950',
+    accentBadgeClass: 'bg-emerald-100 text-emerald-900 border border-emerald-300',
+    glowClass: 'shadow-emerald-300/40 ring-emerald-300'
+  },
+  {
+    id: 'ocean',
+    name: 'أعماق المحيط',
+    nameEn: 'Deep Ocean',
+    icon: '🌊',
+    tagline: 'أمواج البحر، الشعب المرجانية ومغامرات الدلافين',
+    description: 'درجات الأزرق التركوازي والأكوا المنعشة التي تمنح الطفل شعوراً بالانتعاش والتركيز.',
+    palette: ['#0284C7', '#06B6D4', '#3B82F6', '#F0F9FF'],
+    isDark: false,
+    pageBgClass: 'bg-[#F0F9FF] text-sky-950',
+    pageGradientStyle: 'radial-gradient(ellipse at 50% 0%, #BAE6FD 0%, #F0F9FF 70%)',
+    headerGradient: 'bg-gradient-to-r from-sky-500 via-blue-600 to-cyan-600',
+    heroBgClass: 'bg-gradient-to-r from-sky-100/70 via-cyan-50/60 to-blue-100/60 border-b border-sky-200/70 text-sky-950',
+    navBgClass: 'bg-white/95 backdrop-blur-md',
+    navBorderClass: 'border-sky-100',
+    navActiveClass: 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md shadow-sky-200 ring-2 ring-sky-300',
+    primaryBtnClass: 'bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white shadow-md shadow-sky-200 border-2 border-sky-300',
+    secondaryBtnClass: 'bg-sky-50 hover:bg-sky-100 text-sky-950 border-2 border-sky-300',
+    accentBtnClass: 'bg-amber-400 hover:bg-amber-300 text-amber-950 shadow-md border-2 border-amber-200',
+    cardBgClass: 'bg-white text-slate-800 border-2 border-sky-100 shadow-md shadow-sky-100/30',
+    cardBorderClass: 'border-sky-200',
+    textPrimaryClass: 'text-sky-950',
+    textSecondaryClass: 'text-sky-800/80',
+    footerBgClass: 'bg-sky-100/70 border-t border-sky-200/80 text-sky-950',
+    accentBadgeClass: 'bg-sky-100 text-sky-900 border border-sky-300',
+    glowClass: 'shadow-sky-300/40 ring-sky-300'
+  },
+  {
+    id: 'candy',
+    name: 'عالم الحلوى',
+    nameEn: 'Candy Wonderland',
+    icon: '🍭',
+    tagline: 'غزل البنات، الفراولة والمارشميلو اللذيذ',
+    description: 'ألوان زاهية ومرحة بدرجات الفوشيا والبنفسجي الباستيل لإسعاد الصغار.',
+    palette: ['#EC4899', '#A855F7', '#F43F5E', '#FFF5F9'],
+    isDark: false,
+    pageBgClass: 'bg-[#FFF5F9] text-pink-950',
+    pageGradientStyle: 'radial-gradient(ellipse at 50% 0%, #FCE7F3 0%, #FFF5F9 70%)',
+    headerGradient: 'bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600',
+    heroBgClass: 'bg-gradient-to-r from-pink-100/70 via-purple-50/50 to-rose-50/60 border-b border-pink-200/60 text-pink-950',
+    navBgClass: 'bg-white/95 backdrop-blur-md',
+    navBorderClass: 'border-pink-100',
+    navActiveClass: 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md shadow-pink-200 ring-2 ring-pink-300',
+    primaryBtnClass: 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white shadow-md shadow-pink-200 border-2 border-pink-300',
+    secondaryBtnClass: 'bg-pink-50 hover:bg-pink-100 text-pink-950 border-2 border-pink-300',
+    accentBtnClass: 'bg-amber-300 hover:bg-amber-200 text-pink-950 shadow-md border-2 border-amber-200',
+    cardBgClass: 'bg-white text-slate-800 border-2 border-pink-100 shadow-md shadow-pink-100/30',
+    cardBorderClass: 'border-pink-200',
+    textPrimaryClass: 'text-pink-950',
+    textSecondaryClass: 'text-pink-800/80',
+    footerBgClass: 'bg-pink-100/70 border-t border-pink-200/80 text-pink-950',
+    accentBadgeClass: 'bg-pink-100 text-pink-950 border border-pink-300',
+    glowClass: 'shadow-pink-300/40 ring-pink-300'
+  }
+];
+
+export const BUTTON_STYLE_CLASSES: Record<ButtonStyleVariant, { label: string; icon: string; className: string; preview: string }> = {
+  rounded: {
+    label: 'أزرار دائرية ناعمة',
+    icon: '🫧',
+    className: 'rounded-2xl transition-all duration-150 active:scale-95',
+    preview: 'حواف مستديرة فائقة النعومة ومريحة للمس'
+  },
+  '3d': {
+    label: 'أزرار ثلاثية الأبعاد (3D Pop)',
+    icon: '🎈',
+    className: 'rounded-2xl shadow-[0_5px_0_rgba(0,0,0,0.18)] active:translate-y-1 active:shadow-[0_1px_0_rgba(0,0,0,0.18)] transition-all duration-100',
+    preview: 'تأثير بروز وضغط حقيقي يعشقه الأطفال'
+  },
+  classic: {
+    label: 'أزرار كلاسيكية أنيقة',
+    icon: '⭐',
+    className: 'rounded-xl shadow-sm hover:shadow-md transition-all active:scale-98',
+    preview: 'مظهر مرتب وعصري خفيف الوزن'
+  }
+};
+
+export const DEFAULT_THEME_ID: ThemeId = 'sunshine';
+export const DEFAULT_BUTTON_STYLE: ButtonStyleVariant = 'rounded';
+
+export function getTheme(id?: ThemeId): AppTheme {
+  return APP_THEMES.find(t => t.id === id) || APP_THEMES[0];
+}

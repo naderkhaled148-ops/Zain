@@ -1,12 +1,15 @@
 import React from 'react';
-import { AppTab } from '../types';
+import { AppTab, AppTheme, ButtonStyleVariant } from '../types';
 import { BookOpen, PenTool, Puzzle, Calculator, BookHeart, HelpCircle, Trophy, Gamepad2, Users } from 'lucide-react';
 import { sound } from '../utils/soundEffects';
+import { BUTTON_STYLE_CLASSES } from '../data/themesData';
 
 interface NavigationProps {
   currentTab: AppTab;
   onSelectTab: (tab: AppTab) => void;
   onOpenCharacters?: () => void;
+  theme?: AppTheme;
+  buttonStyle?: ButtonStyleVariant;
 }
 
 interface TabItem {
@@ -18,7 +21,15 @@ interface TabItem {
   badge?: string;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ currentTab, onSelectTab, onOpenCharacters }) => {
+export const Navigation: React.FC<NavigationProps> = ({ 
+  currentTab, 
+  onSelectTab, 
+  onOpenCharacters,
+  theme,
+  buttonStyle = 'rounded'
+}) => {
+  const btnConfig = BUTTON_STYLE_CLASSES[buttonStyle] || BUTTON_STYLE_CLASSES.rounded;
+
   const tabs: TabItem[] = [
     {
       id: 'games',
@@ -81,12 +92,24 @@ export const Navigation: React.FC<NavigationProps> = ({ currentTab, onSelectTab,
     }
   ];
 
+  const navBg = theme?.navBgClass || 'bg-white/95 backdrop-blur-md';
+  const navBorder = theme?.navBorderClass || 'border-amber-100';
+  const isDark = theme?.isDark ?? false;
+
   return (
-    <nav className="bg-white/95 backdrop-blur-md border-b border-amber-100 py-2.5 px-3 sticky top-[72px] sm:top-[76px] z-30 shadow-sm">
+    <nav className={`${navBg} border-b ${navBorder} py-2.5 px-3 sticky top-[72px] sm:top-[76px] z-30 shadow-sm transition-colors duration-300`}>
       <div className="max-w-6xl mx-auto flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = currentTab === tab.id;
+
+          const activeClasses = theme 
+            ? `${theme.navActiveClass} scale-105` 
+            : `${tab.activeBg} shadow-md scale-105 ring-2 ring-white`;
+
+          const inactiveClasses = isDark
+            ? 'bg-[#141c38] hover:bg-[#1d274c] text-indigo-100 hover:text-white border border-indigo-800/80 shadow-xs'
+            : 'bg-white/80 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/90 shadow-2xs';
 
           return (
             <button
@@ -95,10 +118,12 @@ export const Navigation: React.FC<NavigationProps> = ({ currentTab, onSelectTab,
                 sound.playPop();
                 onSelectTab(tab.id);
               }}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl font-bold font-kids text-xs sm:text-sm whitespace-nowrap transition-all duration-200 select-none relative ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 font-bold font-kids text-xs sm:text-sm whitespace-nowrap select-none relative cursor-pointer ${
+                buttonStyle === '3d' ? 'rounded-2xl' : buttonStyle === 'classic' ? 'rounded-xl' : 'rounded-2xl'
+              } ${
                 isActive
-                  ? `${tab.activeBg} shadow-md scale-105 ring-2 ring-white`
-                  : 'bg-amber-50/60 hover:bg-amber-100/80 text-slate-700 hover:text-slate-900 border border-amber-100'
+                  ? `${activeClasses} ${buttonStyle === '3d' ? 'shadow-[0_4px_0_rgba(0,0,0,0.2)]' : 'shadow-md'}`
+                  : inactiveClasses
               }`}
             >
               <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive ? 'text-white' : tab.color}`} />
@@ -117,3 +142,4 @@ export const Navigation: React.FC<NavigationProps> = ({ currentTab, onSelectTab,
     </nav>
   );
 };
+

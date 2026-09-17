@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppTab, UserProgress, UserAccount } from './types';
+import { AppTab, UserProgress, UserAccount, ThemeId, ButtonStyleVariant } from './types';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { LetterExplorer } from './components/LetterExplorer';
@@ -12,7 +12,9 @@ import { EnhancedRewards } from './components/EnhancedRewards';
 import { MiniGamesHub } from './components/games/MiniGamesHub';
 import { CharactersShowcase } from './components/CharactersShowcase';
 import { AuthModal } from './components/AuthModal';
+import { SettingsModal } from './components/SettingsModal';
 import { EDUCATIONAL_CHARACTERS, SYSTEM_BADGES } from './data/charactersData';
+import { APP_THEMES, DEFAULT_THEME_ID, DEFAULT_BUTTON_STYLE, BUTTON_STYLE_CLASSES, getTheme } from './data/themesData';
 import { sound } from './utils/soundEffects';
 import { 
   getActiveUser, 
@@ -20,16 +22,19 @@ import {
   saveActiveUserProgress, 
   DEFAULT_INITIAL_PROGRESS 
 } from './utils/authStorage';
-import { Volume2, Sparkles, Heart, Users, Gamepad2, X, LogIn, KeyRound, UserCheck } from 'lucide-react';
+import { Volume2, Sparkles, Heart, Users, Gamepad2, X, LogIn, KeyRound, UserCheck, Palette, Settings } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 const STORAGE_KEY = 'egyptian_grade1_arabic_math_v2';
+const THEME_STORAGE_KEY = 'egyptian_grade1_theme_id';
+const BUTTON_STYLE_STORAGE_KEY = 'egyptian_grade1_btn_style';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<AppTab>('games');
   const [isSoundOn, setIsSoundOn] = useState<boolean>(true);
   const [showCharactersModal, setShowCharactersModal] = useState<boolean>(false);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+  const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
 
   // Authenticated user state
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => {
@@ -52,6 +57,41 @@ export default function App() {
     }
     return DEFAULT_INITIAL_PROGRESS;
   });
+
+  // Theme state
+  const [currentThemeId, setCurrentThemeId] = useState<ThemeId>(() => {
+    if (progress?.themeId && APP_THEMES.some(t => t.id === progress.themeId)) {
+      return progress.themeId;
+    }
+    try {
+      const saved = localStorage.getItem(THEME_STORAGE_KEY) as ThemeId;
+      if (saved && APP_THEMES.some(t => t.id === saved)) {
+        return saved;
+      }
+    } catch {
+      // Ignore
+    }
+    return DEFAULT_THEME_ID;
+  });
+
+  // Button Style variant state
+  const [currentButtonStyle, setCurrentButtonStyle] = useState<ButtonStyleVariant>(() => {
+    if (progress?.buttonStyle && (progress.buttonStyle === 'rounded' || progress.buttonStyle === '3d' || progress.buttonStyle === 'classic')) {
+      return progress.buttonStyle;
+    }
+    try {
+      const saved = localStorage.getItem(BUTTON_STYLE_STORAGE_KEY) as ButtonStyleVariant;
+      if (saved && (saved === 'rounded' || saved === '3d' || saved === 'classic')) {
+        return saved;
+      }
+    } catch {
+      // Ignore
+    }
+    return DEFAULT_BUTTON_STYLE;
+  });
+
+  const activeTheme = getTheme(currentThemeId);
+  const activeBtnConfig = BUTTON_STYLE_CLASSES[currentButtonStyle] || BUTTON_STYLE_CLASSES.rounded;
 
   // Save progress changes locally and to user account
   useEffect(() => {
@@ -179,21 +219,26 @@ export default function App() {
   const activeChar = EDUCATIONAL_CHARACTERS.find(c => c.id === progress.selectedCharacterId) || EDUCATIONAL_CHARACTERS[0];
 
   return (
-    <div className="min-h-screen bg-[#FFFDF6] flex flex-col font-reading text-slate-800">
+    <div 
+      className={`min-h-screen ${activeTheme.pageBgClass} flex flex-col font-reading transition-colors duration-300`}
+      style={{ background: activeTheme.pageGradientStyle }}
+    >
       {/* Top Header */}
       <Header
         progress={progress}
         currentUser={currentUser}
+        theme={activeTheme}
         isSoundOn={isSoundOn}
         onToggleSound={handleToggleSound}
         onOpenRewards={() => setCurrentTab('rewards')}
         onOpenCharacters={() => setShowCharactersModal(true)}
         onOpenAuth={() => setShowAuthModal(true)}
+        onOpenSettings={() => setShowSettingsModal(true)}
       />
 
       {/* Guest / Login encouragement banner when not logged in */}
       {!currentUser && (
-        <div className="bg-amber-500 text-amber-950 px-4 py-2 text-xs sm:text-sm font-medium border-b border-amber-600/30 flex flex-wrap items-center justify-between gap-2">
+        <div className={`${activeTheme.isDark ? 'bg-indigo-950/90 text-cyan-200 border-indigo-700/60' : 'bg-amber-500 text-amber-950 border-amber-600/30'} px-4 py-2 text-xs sm:text-sm font-medium border-b flex flex-wrap items-center justify-between gap-2 transition-colors`}>
           <div className="flex items-center gap-2">
             <span className="text-base">🔐</span>
             <span>
@@ -206,7 +251,7 @@ export default function App() {
               sound.playPop();
               setShowAuthModal(true);
             }}
-            className="bg-white hover:bg-yellow-100 text-amber-950 px-3 py-1 rounded-xl font-kids font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center gap-1"
+            className={`bg-white hover:bg-yellow-100 text-amber-950 px-3 py-1 font-kids font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center gap-1 ${activeBtnConfig.className}`}
           >
             <KeyRound className="w-3.5 h-3.5 text-amber-700" />
             <span>تَسْجِيلُ الدُّخُولِ / حِسَابٌ جَدِيد</span>
@@ -219,10 +264,12 @@ export default function App() {
         currentTab={currentTab}
         onSelectTab={(tab) => setCurrentTab(tab)}
         onOpenCharacters={() => setShowCharactersModal(true)}
+        theme={activeTheme}
+        buttonStyle={currentButtonStyle}
       />
 
       {/* Hero Banner with Selected Character Companion */}
-      <section className="bg-gradient-to-r from-amber-100/70 via-rose-50/50 to-indigo-50/60 border-b border-amber-200/50 py-3 px-4">
+      <section className={`${activeTheme.heroBgClass} py-3 px-4 transition-colors duration-300`}>
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <button
@@ -231,32 +278,49 @@ export default function App() {
                 sound.speakArabic(activeChar.greetingVoice);
                 setShowCharactersModal(true);
               }}
-              className="w-12 h-12 rounded-2xl flex items-center justify-center text-3xl shadow-sm border-2 border-amber-300 bg-white hover:scale-105 active:scale-95 transition-transform"
+              className={`w-12 h-12 rounded-2xl flex items-center justify-center text-3xl shadow-sm border-2 ${
+                activeTheme.isDark ? 'border-cyan-400/60 bg-slate-900/90 text-white' : 'border-amber-300 bg-white'
+              } hover:scale-105 active:scale-95 transition-transform cursor-pointer`}
+              title="تحدث مع شخصيتك"
             >
               {activeChar.avatar}
             </button>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-kids font-black text-sm sm:text-base text-slate-800">
+                <span className={`font-kids font-black text-sm sm:text-base ${activeTheme.textPrimaryClass}`}>
                   مُرَافِقُكَ الْيَوْم: {activeChar.name}
                 </span>
-                <span className="text-[11px] font-bold text-amber-800 bg-amber-200/70 px-2 py-0.5 rounded-full">
+                <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${activeTheme.accentBadgeClass}`}>
                   {activeChar.role}
                 </span>
               </div>
-              <p className="text-xs text-slate-600 italic">
+              <p className={`text-xs italic ${activeTheme.textSecondaryClass}`}>
                 «{activeChar.catchphrase}»
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Quick Theme Customizer Button */}
+            <button
+              type="button"
+              onClick={() => {
+                sound.playPop();
+                setShowSettingsModal(true);
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 font-kids font-bold text-xs shadow-xs transition-all cursor-pointer ${activeTheme.accentBtnClass} ${activeBtnConfig.className}`}
+              title="تخصيص ألوان المظهر وأشكال الأزرار (Theme Customizer)"
+            >
+              <Palette className="w-4 h-4" />
+              <span>المظهر ({activeTheme.icon})</span>
+            </button>
+
             <button
               onClick={() => {
                 sound.playPop();
                 setShowCharactersModal(true);
               }}
-              className="flex items-center gap-1.5 bg-white hover:bg-amber-50 text-amber-900 border border-amber-300 px-3 py-1.5 rounded-xl font-kids font-bold text-xs shadow-xs transition-all"
+              className={`flex items-center gap-1.5 px-3 py-1.5 font-kids font-bold text-xs shadow-xs transition-all cursor-pointer ${activeTheme.secondaryBtnClass} ${activeBtnConfig.className}`}
             >
               <Users className="w-4 h-4 text-amber-600" />
               <span>شَخْصِيَّاتُ الْبَرْنَامَج (٤)</span>
@@ -267,7 +331,7 @@ export default function App() {
                 sound.playPop();
                 setCurrentTab('games');
               }}
-              className="flex items-center gap-1.5 bg-gradient-to-r from-rose-500 to-amber-500 text-white px-3 py-1.5 rounded-xl font-kids font-bold text-xs shadow-xs hover:opacity-95 transition-all"
+              className={`flex items-center gap-1.5 px-3 py-1.5 font-kids font-bold text-xs shadow-xs hover:opacity-95 transition-all cursor-pointer ${activeTheme.primaryBtnClass} ${activeBtnConfig.className}`}
             >
               <Gamepad2 className="w-4 h-4" />
               <span>الْأَلْعَابُ الْمُصَغَّرَة 🎮</span>
@@ -348,8 +412,8 @@ export default function App() {
       )}
 
       {/* Child Mascot Footer Message */}
-      <footer className="bg-amber-100/70 border-t border-amber-200/80 py-4 px-4 text-center mt-8">
-        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm text-amber-900 font-medium">
+      <footer className={`${activeTheme.footerBgClass} py-4 px-4 text-center mt-8 transition-colors duration-300`}>
+        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm font-medium">
           <div className="flex items-center gap-2">
             <span className="text-2xl animate-playful">{activeChar.avatar}</span>
             <span>
@@ -357,16 +421,30 @@ export default function App() {
             </span>
           </div>
 
-          <button
-            onClick={() => {
-              sound.playStar();
-              sound.speakArabic(activeChar.advice[0]);
-            }}
-            className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-kids font-bold px-3.5 py-1.5 rounded-xl shadow-xs transition-all"
-          >
-            <Volume2 className="w-4 h-4" />
-            <span>اسْتَمِعْ لِـ {activeChar.name.split(' ')[0]}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                sound.playStar();
+                sound.speakArabic(activeChar.advice[0]);
+              }}
+              className={`flex items-center gap-1.5 font-kids font-bold px-3.5 py-1.5 shadow-xs transition-all cursor-pointer ${activeTheme.primaryBtnClass} ${activeBtnConfig.className}`}
+            >
+              <Volume2 className="w-4 h-4" />
+              <span>اسْتَمِعْ لِـ {activeChar.name.split(' ')[0]}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                sound.playPop();
+                setShowSettingsModal(true);
+              }}
+              className={`flex items-center gap-1 font-kids font-bold px-2.5 py-1.5 shadow-xs transition-all cursor-pointer ${activeTheme.secondaryBtnClass} ${activeBtnConfig.className}`}
+              title="تغيير المظهر والألوان"
+            >
+              <Palette className="w-3.5 h-3.5" />
+              <span>تَغْيِيرُ الْمَظْهَر</span>
+            </button>
+          </div>
         </div>
       </footer>
 
@@ -377,6 +455,30 @@ export default function App() {
         currentUser={currentUser}
         onLoginSuccess={handleLoginSuccess}
         onLogout={handleLogout}
+      />
+
+      {/* Theme Customizer & Settings Modal */}
+      <SettingsModal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+        currentThemeId={currentThemeId}
+        currentButtonStyle={currentButtonStyle}
+        onSelectTheme={(themeId) => {
+          setCurrentThemeId(themeId);
+          try {
+            localStorage.setItem(THEME_STORAGE_KEY, themeId);
+          } catch {}
+          setProgress((prev) => ({ ...prev, themeId }));
+        }}
+        onSelectButtonStyle={(style) => {
+          setCurrentButtonStyle(style);
+          try {
+            localStorage.setItem(BUTTON_STYLE_STORAGE_KEY, style);
+          } catch {}
+          setProgress((prev) => ({ ...prev, buttonStyle: style }));
+        }}
+        isSoundOn={isSoundOn}
+        onToggleSound={handleToggleSound}
       />
     </div>
   );

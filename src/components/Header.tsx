@@ -1,27 +1,31 @@
 import React from 'react';
-import { Sparkles, Flame, Volume2, VolumeX, Award, Heart, Users, User, LogIn } from 'lucide-react';
-import { UserProgress, UserAccount } from '../types';
+import { Sparkles, Flame, Volume2, VolumeX, Award, Heart, Users, User, LogIn, Settings, Palette } from 'lucide-react';
+import { UserProgress, UserAccount, AppTheme } from '../types';
 import { sound } from '../utils/soundEffects';
 import { EDUCATIONAL_CHARACTERS } from '../data/charactersData';
 
 interface HeaderProps {
   progress: UserProgress;
   currentUser: UserAccount | null;
+  theme?: AppTheme;
   isSoundOn: boolean;
   onToggleSound: () => void;
   onOpenRewards: () => void;
   onOpenCharacters?: () => void;
   onOpenAuth: () => void;
+  onOpenSettings?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   progress,
   currentUser,
+  theme,
   isSoundOn,
   onToggleSound,
   onOpenRewards,
   onOpenCharacters,
-  onOpenAuth
+  onOpenAuth,
+  onOpenSettings
 }) => {
   // Compute level titles
   const getLevelTitle = (level: number) => {
@@ -37,7 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
   const currentLevelProgress = Math.min(100, Math.round(((progress.xp % 100) / 100) * 100));
 
   return (
-    <header className="bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-500 p-3 sm:p-4 text-white shadow-lg sticky top-0 z-40">
+    <header className={`${theme?.headerGradient || 'bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-500'} p-3 sm:p-4 text-white shadow-lg sticky top-0 z-40 transition-colors duration-300`}>
       <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
         {/* Logo and Child Mascot Profile */}
         <div className="flex items-center gap-3">
@@ -175,13 +179,27 @@ export const Header: React.FC<HeaderProps> = ({
                 sound.unlockAudio();
                 sound.speakArabic('أَهْلاً بِكَ! صَوْتُ الْحُرُوفِ وَالْجُمَلِ يَعْمَلُ بِمِثَالِيَّة!');
               }}
-              className="hidden sm:flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white text-xs px-2.5 py-1.5 rounded-xl font-bold border border-white/30 transition-all cursor-pointer shadow-xs active:scale-95"
+              className="hidden md:flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white text-xs px-2.5 py-1.5 rounded-xl font-bold border border-white/30 transition-all cursor-pointer shadow-xs active:scale-95"
               title="انقر لتجربة نطق الصوت فوراً"
             >
               <Volume2 className="w-3.5 h-3.5 text-yellow-300" />
               <span>تَجْرِبَةُ النُّطْق</span>
             </button>
           )}
+
+          {/* Theme Customizer & Settings button */}
+          <button
+            type="button"
+            onClick={() => {
+              sound.playPop();
+              if (onOpenSettings) onOpenSettings();
+            }}
+            className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-2.5 sm:px-3 py-1.5 rounded-xl border border-white/30 shadow-xs active:scale-95 transition-all cursor-pointer font-kids text-xs font-bold"
+            title="تخصيص المظهر، الألوان، وشكل الأزرار (Theme Customizer)"
+          >
+            <Palette className="w-4 h-4 text-yellow-300" />
+            <span className="hidden sm:inline">الْمَظْهَر 🎨</span>
+          </button>
 
           {/* Sound Toggle */}
           <button
