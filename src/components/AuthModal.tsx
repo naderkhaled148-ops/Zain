@@ -292,9 +292,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </h2>
             <p className="text-xs sm:text-sm text-yellow-100 font-medium mt-1 max-w-xs mx-auto">
               {currentUser 
-                ? 'حسابك محفوظ على هذا الجهاز مع كل النجوم والألعاب' 
-                : 'احفظ إنجازاتك ونجومك في حساب خاص بك لاستخدامه دائماً'}
+                ? 'حسابك محفوظ على هذا الجهاز داخل البرنامج مع كل النجوم والألعاب' 
+                : 'احفظ إنجازاتك في حساب داخلي خاص بالبرنامج بدون أي حساب خارجي'}
             </p>
+            <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-0.5 rounded-full bg-black/20 border border-white/20 text-[11px] text-yellow-200">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
+              <span>تسجيل داخلي على البرنامج فقط • لا يتطلب جوجل أو إيميل</span>
+            </div>
           </div>
         </div>
 
