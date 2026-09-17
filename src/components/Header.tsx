@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Flame, Volume2, VolumeX, Award, Heart, Users, User, LogIn, Settings, Palette, GraduationCap } from 'lucide-react';
+import { Sparkles, Flame, Volume2, VolumeX, Award, Heart, Users, User, LogIn, UserPlus, Settings, Palette, GraduationCap } from 'lucide-react';
 import { UserProgress, UserAccount, AppTheme, DifficultyLevel } from '../types';
 import { getDifficultyConfig } from '../data/difficultyData';
 import { sound } from '../utils/soundEffects';
@@ -14,7 +14,7 @@ interface HeaderProps {
   onToggleSound: () => void;
   onOpenRewards: () => void;
   onOpenCharacters?: () => void;
-  onOpenAuth: () => void;
+  onOpenAuth: (tab?: 'login' | 'register') => void;
   onOpenSettings?: () => void;
 }
 
@@ -162,17 +162,32 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={() => {
-                sound.playPop();
-                onOpenAuth();
-              }}
-              className="flex items-center gap-1.5 bg-yellow-300 hover:bg-yellow-200 text-amber-950 px-2.5 sm:px-3 py-1.5 rounded-xl font-kids font-bold text-xs shadow-md active:scale-95 transition-all cursor-pointer"
-            >
-              <LogIn className="w-4 h-4" />
-              <span>دخول / حساب</span>
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  sound.playPop();
+                  onOpenAuth('register');
+                }}
+                className="flex items-center gap-1 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-white px-2.5 sm:px-3 py-1.5 rounded-xl font-kids font-bold text-xs shadow-md active:scale-95 transition-all cursor-pointer ring-2 ring-emerald-300/60"
+                title="إنشاء حساب بطل جديد لحفظ النجوم والألعاب"
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>حساب جديد ✨</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  sound.playPop();
+                  onOpenAuth('login');
+                }}
+                className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white px-2 sm:px-2.5 py-1.5 rounded-xl font-kids font-bold text-xs border border-white/30 shadow-xs active:scale-95 transition-all cursor-pointer"
+                title="تسجيل الدخول لحساب مسجل"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">دخول</span>
+              </button>
+            </div>
           )}
 
           {/* Quick audio test */}

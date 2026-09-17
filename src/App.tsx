@@ -23,7 +23,7 @@ import {
   saveActiveUserProgress, 
   DEFAULT_INITIAL_PROGRESS 
 } from './utils/authStorage';
-import { Volume2, Sparkles, Heart, Users, Gamepad2, X, LogIn, KeyRound, UserCheck, Palette, Settings, GraduationCap } from 'lucide-react';
+import { Volume2, Sparkles, Heart, Users, Gamepad2, X, LogIn, UserPlus, KeyRound, UserCheck, Palette, Settings, GraduationCap } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 const STORAGE_KEY = 'egyptian_grade1_arabic_math_v2';
@@ -35,7 +35,10 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState<AppTab>('games');
   const [isSoundOn, setIsSoundOn] = useState<boolean>(true);
   const [showCharactersModal, setShowCharactersModal] = useState<boolean>(false);
-  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(() => {
+    return !getActiveUser();
+  });
+  const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('register');
   const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
 
   // Authenticated user state
@@ -268,30 +271,48 @@ export default function App() {
         onToggleSound={handleToggleSound}
         onOpenRewards={() => setCurrentTab('rewards')}
         onOpenCharacters={() => setShowCharactersModal(true)}
-        onOpenAuth={() => setShowAuthModal(true)}
+        onOpenAuth={(tab = 'register') => {
+          setAuthModalTab(tab);
+          setShowAuthModal(true);
+        }}
         onOpenSettings={() => setShowSettingsModal(true)}
       />
 
       {/* Guest / Login encouragement banner when not logged in */}
       {!currentUser && (
-        <div className={`${activeTheme.isDark ? 'bg-indigo-950/90 text-cyan-200 border-indigo-700/60' : 'bg-amber-500 text-amber-950 border-amber-600/30'} px-4 py-2 text-xs sm:text-sm font-medium border-b flex flex-wrap items-center justify-between gap-2 transition-colors`}>
+        <div className={`${activeTheme.isDark ? 'bg-indigo-950/90 text-cyan-200 border-indigo-700/60' : 'bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 text-amber-950 border-amber-500/40'} px-4 py-2.5 text-xs sm:text-sm font-medium border-b flex flex-wrap items-center justify-between gap-2 transition-colors shadow-2xs`}>
           <div className="flex items-center gap-2">
-            <span className="text-base">🔐</span>
+            <span className="text-xl">🌟</span>
             <span>
-              <strong>تَنْبِيهٌ مُهِمّ:</strong> لَمْ تُسَجِّلْ دُخُولَكَ بَعْد! سَجِّلْ بِاسْمِ مُسْتَخْدِمٍ وَرَقَمٍ سِرِّيٍّ لِحِفْظِ نُجُومِكَ وَإِنْجَازَاتِكَ!
+              <strong>أَهْلاً بِكَ يَا بَطَل!</strong> احْفَظْ نُجُومَكَ وَإِنْجَازَاتِكَ فِي حِسَابٍ خَاصٍّ بِكَ لِتَسْتَخْدِمَهُ فِي كُلِّ مَرَّة!
             </span>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              sound.playPop();
-              setShowAuthModal(true);
-            }}
-            className={`bg-white hover:bg-yellow-100 text-amber-950 px-3 py-1 font-kids font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center gap-1 ${activeBtnConfig.className}`}
-          >
-            <KeyRound className="w-3.5 h-3.5 text-amber-700" />
-            <span>تَسْجِيلُ الدُّخُولِ / حِسَابٌ جَدِيد</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                sound.playPop();
+                setAuthModalTab('register');
+                setShowAuthModal(true);
+              }}
+              className={`bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 font-kids font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center gap-1.5 ${activeBtnConfig.className}`}
+            >
+              <UserPlus className="w-3.5 h-3.5 text-yellow-300" />
+              <span>إِنْشَاءُ حِسَابٍ جَدِيد ✨</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                sound.playPop();
+                setAuthModalTab('login');
+                setShowAuthModal(true);
+              }}
+              className={`bg-white hover:bg-amber-50 text-slate-800 px-3 py-1.5 font-kids font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center gap-1 ${activeBtnConfig.className}`}
+            >
+              <LogIn className="w-3.5 h-3.5 text-amber-600" />
+              <span>تَسْجِيلُ الدُّخُول</span>
+            </button>
+          </div>
         </div>
       )}
 
@@ -513,6 +534,8 @@ export default function App() {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         currentUser={currentUser}
+        currentProgress={progress}
+        initialTab={authModalTab}
         onLoginSuccess={handleLoginSuccess}
         onLogout={handleLogout}
       />

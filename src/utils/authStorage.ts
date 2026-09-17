@@ -24,13 +24,29 @@ export const DEFAULT_INITIAL_PROGRESS: UserProgress = {
 
 const DEFAULT_DEMO_ACCOUNT: UserAccount = {
   id: 'demo-hero-1',
-  username: 'بطل_المستقبل',
+  username: 'batal_1',
   password: '123',
   displayName: 'بَطَلُ الْمُسْتَقْبَل',
   avatar: '🦁',
   createdAt: new Date().toISOString(),
   progress: { ...DEFAULT_INITIAL_PROGRESS }
 };
+
+/** Convert Eastern Arabic numerals (٠-٩) to Western (0-9) */
+export function normalizeNumerals(str: string): string {
+  if (!str) return '';
+  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  return str.replace(/[٠-٩]/g, (digit) => arabicNumerals.indexOf(digit).toString());
+}
+
+/** Normalize identifier or username for fuzzy comparison */
+export function normalizeIdentifier(str: string): string {
+  if (!str) return '';
+  return normalizeNumerals(str)
+    .trim()
+    .toLowerCase()
+    .replace(/[\s\-_]+/g, '');
+}
 
 export function getStoredAccounts(): UserAccount[] {
   try {
@@ -98,3 +114,31 @@ export function saveActiveUserProgress(userId: string, progress: UserProgress): 
     saveAccounts(accounts);
   }
 }
+
+export function deleteStoredAccount(userId: string): UserAccount[] {
+  const accounts = getStoredAccounts();
+  const filtered = accounts.filter(a => a.id !== userId);
+  saveAccounts(filtered);
+  if (getCurrentUserId() === userId) {
+    const nextUser = filtered.length > 0 ? filtered[0] : null;
+    setCurrentUserId(nextUser ? nextUser.id : null);
+  }
+  return filtered;
+}
+
+/**
+ * Flexible search for account by username OR display name.
+ * Handles spaces, case differences, and Arabic numerals.
+ */
+export function findMatchingAccount(identifier: string): UserAccount | undefined {
+  const accounts = getStoredAccounts();
+  const cleanInput = normalizeIdentifier(identifier);
+  if (!cleanInput) return undefined;
+
+  return accounts.find(acc => {
+    const cleanUser = normalizeIdentifier(acc.username);
+    const cleanDisplay = normalizeIdentifier(acc.displayName);
+    return cleanUser === cleanInput || cleanDisplay === cleanInput;
+  });
+}
+
