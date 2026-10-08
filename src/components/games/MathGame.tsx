@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { sound } from '../../utils/soundEffects';
 import { Sparkles, CheckCircle2, RotateCcw, Volume2, ArrowLeft, Trophy, GraduationCap } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -73,6 +73,30 @@ const EASY_PROBLEMS: BananaProblem[] = [
     options: [3, 4, 5],
     correctAnswer: 4,
     explanation: 'أَحْسَنْتَ! هُنَاكَ ٤ بُرْتُقَالَاتٍ!'
+  },
+  {
+    id: 'em5',
+    question: 'عُدَّ الْحَلْوَى اللَّذِيذَة: كَمْ قِطْعَةَ حَلْوَى أَمَامَكَ؟ 🍬',
+    type: 'count',
+    targetNumber: 5,
+    countGroupA: 5,
+    fruitEmoji: '🍬',
+    options: [4, 5, 6],
+    correctAnswer: 5,
+    explanation: 'رَائِع! هُنَاكَ ٥ قِطَعِ حَلْوَى!'
+  },
+  {
+    id: 'em6',
+    question: '١ مَوْزَة 🍌 + ١ مَوْزَة 🍌 = كَمْ؟',
+    type: 'add',
+    targetNumber: 2,
+    countGroupA: 1,
+    countGroupB: 1,
+    symbol: '+',
+    fruitEmoji: '🍌',
+    options: [1, 2, 3],
+    correctAnswer: 2,
+    explanation: 'مُمْتَاز! ١ + ١ = ٢!'
   }
 ];
 
@@ -136,6 +160,31 @@ const STANDARD_PROBLEMS: BananaProblem[] = [
     options: [6, 7, 8, 5],
     correctAnswer: 7,
     explanation: 'رَائِعٌ جِدًّا! ٤ + ٣ = ٧ مَوْزَاتٍ لِسِمْسِم!'
+  },
+  {
+    id: 'm6',
+    question: 'قَارِنْ: ٧ كَرَزَات 🍒 أَمْ ٧ كَرَزَات 🍒؟',
+    type: 'compare',
+    targetNumber: 7,
+    countGroupA: 7,
+    countGroupB: 7,
+    fruitEmoji: '🍒',
+    options: ['يُسَاوِي ( = )', 'أَكْبَرُ مِنْ ( > )', 'أَصْغَرُ مِنْ ( < )'],
+    correctAnswer: 'يُسَاوِي ( = )',
+    explanation: 'عَبْقَرِيّ! الْمَجْمُوعَتَانِ مُتَسَاوِيَتَان (٧ = ٧)!'
+  },
+  {
+    id: 'm7',
+    question: 'كَمْ مَوْزَةً مَعَنَا: ٥ مَوْزَات 🍌 + ٥ مَوْزَات 🍌 = ؟',
+    type: 'add',
+    targetNumber: 10,
+    countGroupA: 5,
+    countGroupB: 5,
+    symbol: '+',
+    fruitEmoji: '🍌',
+    options: [9, 10, 11, 8],
+    correctAnswer: 10,
+    explanation: 'بَطَل! ٥ + ٥ = ١٠ مَوْزَاتٍ كَامِلَة!'
   }
 ];
 
@@ -177,6 +226,19 @@ const HARD_PROBLEMS: BananaProblem[] = [
     options: [16, 17, 18, 19],
     correctAnswer: 18,
     explanation: 'رَائِع! ١٠ + ٨ = ١٨ فَرَاوْلَةً!'
+  },
+  {
+    id: 'hm4',
+    question: 'تَحَدِّي الذَّكَاءِ: ١٥ تُفَّاحَة 🍎 - ٥ تُفَّاحَات 🍎 = ؟',
+    type: 'add',
+    targetNumber: 10,
+    countGroupA: 15,
+    countGroupB: 5,
+    symbol: '-',
+    fruitEmoji: '🍎',
+    options: [9, 10, 11, 12],
+    correctAnswer: 10,
+    explanation: 'عَبْقَرِيّ! ١٥ - ٥ = ١٠ تُفَّاحَات!'
   }
 ];
 
@@ -187,11 +249,23 @@ export const MathGame: React.FC<MathGameProps> = ({
   onOpenSettings
 }) => {
   const diffConfig = getDifficultyConfig(difficultyLevel);
-  const problems: BananaProblem[] = difficultyLevel === 'easy'
-    ? EASY_PROBLEMS
-    : difficultyLevel === 'hard'
-      ? HARD_PROBLEMS
-      : STANDARD_PROBLEMS;
+  const getBaseProblems = useCallback(() => {
+    const list = difficultyLevel === 'easy'
+      ? EASY_PROBLEMS
+      : difficultyLevel === 'hard'
+        ? HARD_PROBLEMS
+        : STANDARD_PROBLEMS;
+    return [...list].sort(() => Math.random() - 0.5);
+  }, [difficultyLevel]);
+
+  const [problems, setProblems] = useState<BananaProblem[]>(getBaseProblems);
+
+  useEffect(() => {
+    setProblems(getBaseProblems());
+    setCurrentIdx(0);
+    setIsAnswered(false);
+    setSelectedOption(null);
+  }, [difficultyLevel, getBaseProblems]);
 
   const [currentIdx, setCurrentIdx] = useState<number>(0);
   const [selectedOption, setSelectedOption] = useState<number | string | null>(null);
@@ -244,6 +318,7 @@ export const MathGame: React.FC<MathGameProps> = ({
 
   const handleRestart = () => {
     sound.playPop();
+    setProblems(getBaseProblems());
     setCurrentIdx(0);
     setSelectedOption(null);
     setIsAnswered(false);

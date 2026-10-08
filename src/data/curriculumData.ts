@@ -546,82 +546,9 @@ export const MATH_DATA: MathItem[] = [
   }
 ];
 
-export const QUIZ_QUESTIONS: QuizQuestion[] = [
-  {
-    id: 'q1',
-    type: 'sound',
-    question: 'مَا هُوَ الْحَرْفُ الَّذِي يَبْدَأُ بِهِ صَوْتُ كَلِمَةِ «أَرْنَب»؟ 🐇',
-    audioPrompt: 'أَرْنَب',
-    options: ['أَ', 'بَ', 'مَ', 'دَ'],
-    correctAnswer: 'أَ',
-    explanation: 'أَحْسَنْتَ! أَرْنَب يَبْدَأُ بِحَرْفِ الأَلِفِ الْمَفْتُوحَة (أَ).',
-    emojiHint: '🐇'
-  },
-  {
-    id: 'q2',
-    type: 'sound',
-    question: 'أَيُّ صُورَةٍ تَبْدَأُ بِصَوْتِ «بَـ» الْمَفْتُوح؟',
-    audioPrompt: 'بَـ',
-    options: ['بَقَرَة 🐄', 'أَسَد 🦁', 'دُبّ 🐻', 'فِيل 🐘'],
-    correctAnswer: 'بَقَرَة 🐄',
-    explanation: 'رَائِع! بَقَرَة تَبْدَأُ بِحَرْفِ الْبَاءِ الْمَفْتُوح (بَـ).',
-    emojiHint: '🐄'
-  },
-  {
-    id: 'q3',
-    type: 'missing-letter',
-    question: 'مَا الْحَرْفُ النَّاقِصُ لِتَكْوِينِ كَلِمَةِ «أُ...ـرَتِي»؟ 👨‍👩‍👧‍👦',
-    options: ['س', 'ب', 'ن', 'ل'],
-    correctAnswer: 'س',
-    explanation: 'عَبْقَرِيّ! كَلِمَةُ «أُسْرَتِي» تَحْتَاجُ حَرْفَ السِّين (س).',
-    emojiHint: '👨‍👩‍👧‍👦'
-  },
-  {
-    id: 'q4',
-    type: 'word-match',
-    question: 'اخْتَرِ الْكَلِمَةَ الَّتِي تَدُلُّ عَلَى الصُّورَة: 🍯',
-    options: ['عَسَل', 'لَحْم', 'جُبْن', 'بَلَح'],
-    correctAnswer: 'عَسَل',
-    explanation: 'مُمْتَاز! عَسَل النَّحْلِ لَذِيذٌ وَشَافٍ.',
-    emojiHint: '🍯'
-  },
-  {
-    id: 'q5',
-    type: 'sight-word',
-    question: 'اخْتَرِ الْكَلِمَةَ الشَّائِعَةَ الَّتِي نَقُولُهَا عِنْدَمَا نَتَحَدَّثُ عَنْ أَنْفُسِنَا:',
-    options: ['أَنَا', 'هُوَ', 'هَذِهِ', 'فِي'],
-    correctAnswer: 'أَنَا',
-    explanation: 'بَطَل! «أَنَا أُحِبُّ أُسْرَتِي وَمَدْرَسَتِي».',
-    emojiHint: '🧒'
-  },
-  {
-    id: 'q6',
-    type: 'math',
-    question: 'كَمْ يُسَاوِي: ٣ نُجُوم ⭐ + ٢ نَجْمَة ⭐؟',
-    options: ['٥', '٤', '٦', '٣'],
-    correctAnswer: '٥',
-    explanation: 'أَحْسَنْتَ يَا بَطَل الْحِسَاب! ٣ + ٢ = ٥ نُجُوم.',
-    emojiHint: '⭐⭐⭐⭐⭐'
-  },
-  {
-    id: 'q7',
-    type: 'sound',
-    question: 'مَا هِيَ الْحَرَكَةُ الصَّحِيحَةُ لِحَرْفِ اللام فِي كَلِمَةِ «لُعْبَة»؟ 🧸',
-    options: ['الضَّمَّة (لُ)', 'الْفَتْحَة (لَ)', 'الْكَسْرَة (لِ)', 'السُّكُون (لْ)'],
-    correctAnswer: 'الضَّمَّة (لُ)',
-    explanation: 'صَحِيح! لُعْبَة تَبْدَأُ بِلَامٍ مَضْمُومَة (لُ).',
-    emojiHint: '🧸'
-  },
-  {
-    id: 'q8',
-    type: 'missing-letter',
-    question: 'ادْمِجِ الْحُرُوف: (نَ + مْ + ل) = ؟ 🐜',
-    options: ['نَمْل', 'لَبَن', 'نَخْل', 'نَمِر'],
-    correctAnswer: 'نَمْل',
-    explanation: 'مُمْتَاز جِدًّا! نَ + مْ + ل تُعْطِينَا كَلِمَةَ «نَمْل».',
-    emojiHint: '🐜'
-  }
-];
+import { COMPREHENSIVE_QUESTION_BANK } from './questionBank';
+
+export const QUIZ_QUESTIONS: QuizQuestion[] = COMPREHENSIVE_QUESTION_BANK;
 
 export const INITIAL_STICKERS: Sticker[] = [
   { id: 'st1', title: 'نَجْمُ الْحُرُوف', emoji: '⭐', cost: 10, requiredLevel: 1, category: 'letters', unlocked: true },

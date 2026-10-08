@@ -19,7 +19,7 @@ interface ReadingBasketItem {
 }
 
 export const ReadingGame: React.FC<ReadingGameProps> = ({ onEarnRewards, onCompleteGameScore }) => {
-  const allApples: ReadingBasketItem[] = [
+  const MASTER_APPLES: ReadingBasketItem[] = [
     { id: 'a1', word: 'أَرْنَب', char: 'أَ', imageEmoji: '🐇', meaning: 'أَرْنَب يَجْرِي', category: 'fatha', categoryLabel: 'حَرَكَةُ الْفَتْحَة (ـَ)' },
     { id: 'a2', word: 'أُذُن', char: 'أُ', imageEmoji: '👂', meaning: 'أُذُن نَسْمَعُ بِهَا', category: 'damma', categoryLabel: 'حَرَكَةُ الضَّمَّة (ـُ)' },
     { id: 'a3', word: 'إِبْرَة', char: 'إِ', imageEmoji: '🪡', meaning: 'إِبْرَة نَخِيطُ بِهَا', category: 'kasra', categoryLabel: 'حَرَكَةُ الْكَسْرَة (ـِ)' },
@@ -28,7 +28,27 @@ export const ReadingGame: React.FC<ReadingGameProps> = ({ onEarnRewards, onCompl
     { id: 'a6', word: 'بِطِّيخ', char: 'بِ', imageEmoji: '🍉', meaning: 'بِطِّيخ صَيْفِيّ', category: 'kasra', categoryLabel: 'حَرَكَةُ الْكَسْرَة (ـِ)' },
     { id: 'a7', word: 'سَمَكَة', char: 'سَ', imageEmoji: '🐟', meaning: 'سَمَكَة تَعُوم', category: 'fatha', categoryLabel: 'حَرَكَةُ الْفَتْحَة (ـَ)' },
     { id: 'a8', word: 'سُلَحْفَاة', char: 'سُ', imageEmoji: '🐢', meaning: 'سُلَحْفَاة صَبُورَة', category: 'damma', categoryLabel: 'حَرَكَةُ الضَّمَّة (ـُ)' },
+    { id: 'a9', word: 'سِتَار', char: 'سِ', imageEmoji: '🪟', meaning: 'سِتَارٌ جَمِيل', category: 'kasra', categoryLabel: 'حَرَكَةُ الْكَسْرَة (ـِ)' },
+    { id: 'a10', word: 'مَوْز', char: 'مَ', imageEmoji: '🍌', meaning: 'مَوْز حُلْو', category: 'fatha', categoryLabel: 'حَرَكَةُ الْفَتْحَة (ـَ)' },
+    { id: 'a11', word: 'مُعَلِّم', char: 'مُ', imageEmoji: '👨‍🏫', meaning: 'مُعَلِّم نَشِيط', category: 'damma', categoryLabel: 'حَرَكَةُ الضَّمَّة (ـُ)' },
+    { id: 'a12', word: 'مِقَصّ', char: 'مِ', imageEmoji: '✂️', meaning: 'مِقَصّ نَقُصُّ بِهِ', category: 'kasra', categoryLabel: 'حَرَكَةُ الْكَسْرَة (ـِ)' },
+    { id: 'a13', word: 'تَمْر', char: 'تَ', imageEmoji: '🌴', meaning: 'تَمْر مُفِيد', category: 'fatha', categoryLabel: 'حَرَكَةُ الْفَتْحَة (ـَ)' },
+    { id: 'a14', word: 'تُفَّاح', char: 'تُ', imageEmoji: '🍎', meaning: 'تُفَّاح أَحْمَر', category: 'damma', categoryLabel: 'حَرَكَةُ الضَّمَّة (ـُ)' },
+    { id: 'a15', word: 'تِمْسَاح', char: 'تِ', imageEmoji: '🐊', meaning: 'تِمْسَاح كَبِير', category: 'kasra', categoryLabel: 'حَرَكَةُ الْكَسْرَة (ـِ)' },
+    { id: 'a16', word: 'فَرَاشَة', char: 'فَ', imageEmoji: '🦋', meaning: 'فَرَاشَة تُحَلِّق', category: 'fatha', categoryLabel: 'حَرَكَةُ الْفَتْحَة (ـَ)' },
+    { id: 'a17', word: 'فُلْفُل', char: 'فُ', imageEmoji: '🫑', meaning: 'فُلْفُل أَخْضَر', category: 'damma', categoryLabel: 'حَرَكَةُ الضَّمَّة (ـُ)' },
+    { id: 'a18', word: 'فِيل', char: 'فِ', imageEmoji: '🐘', meaning: 'فِيل قَوِيّ', category: 'kasra', categoryLabel: 'حَرَكَةُ الْكَسْرَة (ـِ)' },
+    { id: 'a19', word: 'حَمَامَة', char: 'حَ', imageEmoji: '🕊️', meaning: 'حَمَامَة سَلام', category: 'fatha', categoryLabel: 'حَرَكَةُ الْفَتْحَة (ـَ)' },
+    { id: 'a20', word: 'حُوت', char: 'حُ', imageEmoji: '🐋', meaning: 'حُوت فِي الْبَحْر', category: 'damma', categoryLabel: 'حَرَكَةُ الضَّمَّة (ـُ)' },
+    { id: 'a21', word: 'حِصَان', char: 'حِ', imageEmoji: '🐎', meaning: 'حِصَان سَرِيع', category: 'kasra', categoryLabel: 'حَرَكَةُ الْكَسْرَة (ـِ)' },
+    { id: 'a22', word: 'قَمَر', char: 'قَ', imageEmoji: '🌙', meaning: 'قَمَر مُنِير', category: 'fatha', categoryLabel: 'حَرَكَةُ الْفَتْحَة (ـَ)' },
+    { id: 'a23', word: 'قُبَّعَة', char: 'قُ', imageEmoji: '🧢', meaning: 'قُبَّعَة رَائِعَة', category: 'damma', categoryLabel: 'حَرَكَةُ الضَّمَّة (ـُ)' },
+    { id: 'a24', word: 'قِطّ', char: 'قِ', imageEmoji: '🐱', meaning: 'قِطّ أَلِيف', category: 'kasra', categoryLabel: 'حَرَكَةُ الْكَسْرَة (ـِ)' },
   ];
+
+  const [allApples, setAllApples] = useState<ReadingBasketItem[]>(() => {
+    return [...MASTER_APPLES].sort(() => Math.random() - 0.5).slice(0, 9);
+  });
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [basketFatha, setBasketFatha] = useState<ReadingBasketItem[]>([]);
@@ -86,6 +106,7 @@ export const ReadingGame: React.FC<ReadingGameProps> = ({ onEarnRewards, onCompl
 
   const handleRestart = () => {
     sound.playPop();
+    setAllApples([...MASTER_APPLES].sort(() => Math.random() - 0.5).slice(0, 9));
     setCurrentIndex(0);
     setBasketFatha([]);
     setBasketDamma([]);

@@ -21,7 +21,7 @@ interface LetterPuzzleChallenge {
 }
 
 export const WritingGame: React.FC<WritingGameProps> = ({ onEarnRewards, onCompleteGameScore }) => {
-  const challenges: LetterPuzzleChallenge[] = [
+  const MASTER_CHALLENGES: LetterPuzzleChallenge[] = [
     {
       id: 'w1',
       word: 'أَب',
@@ -74,8 +74,100 @@ export const WritingGame: React.FC<WritingGameProps> = ({ onEarnRewards, onCompl
         { letter: 'ـبَـ', soundName: 'بَاء فَتْحَة', positionLabel: 'وَسَط الْكَلِمَة' },
         { letter: 'ـن', soundName: 'نُون', positionLabel: 'آخِر الْكَلِمَة' },
       ]
+    },
+    {
+      id: 'w6',
+      word: 'قَمَر',
+      imageEmoji: '🌙',
+      meaning: 'قَمَر مُنِير فِي السَّمَاءِ',
+      parts: [
+        { letter: 'قَـ', soundName: 'قَاف فَتْحَة', positionLabel: 'أَوَّل الْكَلِمَة' },
+        { letter: 'ـمَـ', soundName: 'مِيم فَتْحَة', positionLabel: 'وَسَط الْكَلِمَة' },
+        { letter: 'ـر', soundName: 'رَاء', positionLabel: 'آخِر الْكَلِمَة' },
+      ]
+    },
+    {
+      id: 'w7',
+      word: 'شَمْس',
+      imageEmoji: '☀️',
+      meaning: 'شَمْس سَاطِعَة',
+      parts: [
+        { letter: 'شَـ', soundName: 'شِين فَتْحَة', positionLabel: 'أَوَّل الْكَلِمَة' },
+        { letter: 'ـمْـ', soundName: 'مِيم سُكُون', positionLabel: 'وَسَط الْكَلِمَة' },
+        { letter: 'ـس', soundName: 'سِين', positionLabel: 'آخِر الْكَلِمَة' },
+      ]
+    },
+    {
+      id: 'w8',
+      word: 'أَسَد',
+      imageEmoji: '🦁',
+      meaning: 'أَسَد شُجَاع',
+      parts: [
+        { letter: 'أَ', soundName: 'أَلِف فَتْحَة', positionLabel: 'أَوَّل الْكَلِمَة' },
+        { letter: 'سَـ', soundName: 'سِين فَتْحَة', positionLabel: 'وَسَط الْكَلِمَة' },
+        { letter: 'ـد', soundName: 'دَال', positionLabel: 'آخِر الْكَلِمَة' },
+      ]
+    },
+    {
+      id: 'w9',
+      word: 'سَمَك',
+      imageEmoji: '🐟',
+      meaning: 'سَمَك يَعُوم فِي الْمَاءِ',
+      parts: [
+        { letter: 'سَـ', soundName: 'سِين فَتْحَة', positionLabel: 'أَوَّل الْكَلِمَة' },
+        { letter: 'ـمَـ', soundName: 'مِيم فَتْحَة', positionLabel: 'وَسَط الْكَلِمَة' },
+        { letter: 'ـك', soundName: 'كَاف', positionLabel: 'آخِر الْكَلِمَة' },
+      ]
+    },
+    {
+      id: 'w10',
+      word: 'كُتُب',
+      imageEmoji: '📚',
+      meaning: 'كُتُب مُفِيدَة',
+      parts: [
+        { letter: 'كُـ', soundName: 'كَاف ضَمَّة', positionLabel: 'أَوَّل الْكَلِمَة' },
+        { letter: 'ـتُـ', soundName: 'تَاء ضَمَّة', positionLabel: 'وَسَط الْكَلِمَة' },
+        { letter: 'ـب', soundName: 'بَاء', positionLabel: 'آخِر الْكَلِمَة' },
+      ]
+    },
+    {
+      id: 'w11',
+      word: 'جَمَل',
+      imageEmoji: '🐪',
+      meaning: 'جَمَل صَبُور فِي الصَّحْرَاءِ',
+      parts: [
+        { letter: 'جَـ', soundName: 'جِيم فَتْحَة', positionLabel: 'أَوَّل الْكَلِمَة' },
+        { letter: 'ـمَـ', soundName: 'مِيم فَتْحَة', positionLabel: 'وَسَط الْكَلِمَة' },
+        { letter: 'ـل', soundName: 'لَام', positionLabel: 'آخِر الْكَلِمَة' },
+      ]
+    },
+    {
+      id: 'w12',
+      word: 'عَسَل',
+      imageEmoji: '🍯',
+      meaning: 'عَسَل نَحْلٍ لَذِيذ',
+      parts: [
+        { letter: 'عَـ', soundName: 'عَيْن فَتْحَة', positionLabel: 'أَوَّل الْكَلِمَة' },
+        { letter: 'ـسَـ', soundName: 'سِين فَتْحَة', positionLabel: 'وَسَط الْكَلِمَة' },
+        { letter: 'ـل', soundName: 'لَام', positionLabel: 'آخِر الْكَلِمَة' },
+      ]
+    },
+    {
+      id: 'w13',
+      word: 'قَلَم',
+      imageEmoji: '✏️',
+      meaning: 'قَلَم نَكْتُبُ بِهِ',
+      parts: [
+        { letter: 'قَـ', soundName: 'قَاف فَتْحَة', positionLabel: 'أَوَّل الْكَلِمَة' },
+        { letter: 'ـلَـ', soundName: 'لَام فَتْحَة', positionLabel: 'وَسَط الْكَلِمَة' },
+        { letter: 'ـم', soundName: 'مِيم', positionLabel: 'آخِر الْكَلِمَة' },
+      ]
     }
   ];
+
+  const [challenges, setChallenges] = useState<LetterPuzzleChallenge[]>(() => {
+    return [...MASTER_CHALLENGES].sort(() => Math.random() - 0.5).slice(0, 6);
+  });
 
   const [levelIdx, setLevelIdx] = useState<number>(0);
   const currentChallenge = challenges[levelIdx];
@@ -174,12 +266,14 @@ export const WritingGame: React.FC<WritingGameProps> = ({ onEarnRewards, onCompl
 
   const handleRestartGame = () => {
     sound.playPop();
+    const freshChallenges = [...MASTER_CHALLENGES].sort(() => Math.random() - 0.5).slice(0, 6);
+    setChallenges(freshChallenges);
     setLevelIdx(0);
     setIsGameCompleted(false);
     setIsLevelSolved(false);
-    setFilledSlots(new Array(challenges[0].parts.length).fill(null));
+    setFilledSlots(new Array(freshChallenges[0].parts.length).fill(null));
     setAvailableTiles(
-      challenges[0].parts
+      freshChallenges[0].parts
         .map((p, i) => ({ id: `tile_${i}`, letter: p.letter, used: false }))
         .sort(() => Math.random() - 0.5)
     );

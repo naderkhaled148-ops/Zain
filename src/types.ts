@@ -101,15 +101,34 @@ export interface MathItem {
   visualLabel: string;
 }
 
+export type QuizQuestionType = 
+  | 'sound' 
+  | 'missing-letter' 
+  | 'word-match' 
+  | 'sight-word' 
+  | 'math' 
+  | 'compare' 
+  | 'pattern' 
+  | 'shape' 
+  | 'grammar' 
+  | 'category' 
+  | 'odd-one-out';
+
+export type QuizSubject = 'all' | 'arabic' | 'math' | 'logic';
+
 export interface QuizQuestion {
   id: string;
-  type: 'sound' | 'missing-letter' | 'word-match' | 'sight-word' | 'math';
+  type: QuizQuestionType | string;
+  subject?: 'arabic' | 'math' | 'logic' | 'general';
   question: string;
   audioPrompt?: string;
   options: string[];
   correctAnswer: string;
   explanation: string;
   emojiHint?: string;
+  visualAid?: string;
+  difficulty?: DifficultyLevel;
+  categoryLabel?: string;
 }
 
 export type DifficultyLevel = 'easy' | 'medium' | 'hard';
